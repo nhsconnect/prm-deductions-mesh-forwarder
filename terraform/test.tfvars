@@ -1,6 +1,6 @@
-environment    = "dev"
+environment    = "test"
 
-service_desired_count = "1"
+service_desired_count = "2"
 
 poll_frequency = 60
 
