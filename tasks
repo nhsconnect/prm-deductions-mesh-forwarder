@@ -7,8 +7,8 @@ set -Eeo pipefail
 ###########################
 
 AWS_DEFAULT_REGION=eu-west-2
-IMAGE_REPO_NAME=deductions/gp-to-repo
-export NHS_SERVICE=registrations/mesh-inbox-s3-forwarder
+IMAGE_REPO_NAME=deductions/prm-deductions-mesh-forwarder
+export NHS_SERVICE=deductions/prm-deductions-mesh-forwarder
 AWS_HELPERS_VERSION=0.2.9
 echo "AWS helper scripts version: $AWS_HELPERS_VERSION"
 
@@ -74,7 +74,7 @@ function tf_plan {
   TARGET=""
 
   if [[ "${certs}" == "true" ]]; then
-    TARGET="-target=aws_acm_certificate.gp-to-repo-cert"
+    TARGET="-target=aws_acm_certificate.mesh-forwarder-cert"
   fi
 
   tf_init
@@ -155,7 +155,7 @@ case "${command}" in
       aws ecs wait services-stable \
         --region $AWS_DEFAULT_REGION \
         --cluster $NHS_ENVIRONMENT-${NHS_SERVICE}-ecs-cluster \
-        --services $NHS_ENVIRONMENT-gp-to-repo-service
+        --services $NHS_ENVIRONMENT-mesh-forwarder-service
       ;;
   wait_ecs)
       check_env
