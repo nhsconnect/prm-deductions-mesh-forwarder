@@ -45,6 +45,13 @@ function set_image_tag() {
    export IMAGE_TAG="70db30dc"
 }
 
+function get_authorisation {
+  check_env
+  export SHARED_SECRET=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-shared-secret")
+  export MAIL_BOX_ID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-id")
+  export MAIL_BOX_PASS=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-password")
+}
+
 function get_aws_account_id {
     AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
 }
@@ -144,6 +151,15 @@ case "${command}" in
   tf_apply)
       check_env
       dojo -c Dojofile-infra "./tasks _tf_apply"
+      ;;
+  _get_authorisation_token)
+      _assume_environment_role $NHS_ENVIRONMENT
+      get_authorisation
+      python auth-creation.py $SHARED_SECRET $MAIL_BOX_ID $MAIL_BOX_PASS
+      ;;
+  get_authorisation_token)
+      check_env
+      dojo -c Dojofile-infra "./tasks _get_authorisation_token"
       ;;
   promote_docker_image)
       check_env
