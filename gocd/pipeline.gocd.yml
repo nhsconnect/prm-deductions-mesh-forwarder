@@ -15,7 +15,7 @@ pipelines:
       - build_docker:
           clean_workspace: true
           jobs:
-            outbound:
+            build:
               resources:
                 - docker
               tasks:
