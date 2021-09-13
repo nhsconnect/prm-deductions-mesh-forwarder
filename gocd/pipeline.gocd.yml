@@ -1,0 +1,27 @@
+format_version: 4
+pipelines:
+  "prm-mesh-forwarder":
+    group: deductions
+    label_template: "${mhs[:8]}-${git[:8]}"
+    materials:
+      git:
+        type: configrepo
+        destination: prm-deductions-mesh-forwarder
+      forwarder:
+        git: https://github.com/nhsconnect/prm-gp2gp-mesh-s3-forwarder.git
+        branch: master
+        destination: prm-gp2gp-mesh-s3-forwarder
+    stages:
+      - build_docker:
+          clean_workspace: true
+          jobs:
+            outbound:
+              resources:
+                - docker
+              tasks:
+                - exec:
+                    working_directory: prm-gp2gp-mesh-s3-forwarder
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks build_docker mesh-forwarder

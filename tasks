@@ -107,6 +107,10 @@ function tf_apply {
 # Docker Related Functions #
 ############################
 
+function get_aws_account_id {
+    AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
+}
+
 function docker_login {
   echo Logging in to Amazon ECR...
   eval $(dojo -c Dojofile-infra "aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION")
@@ -176,6 +180,15 @@ case "${command}" in
   wait_ecs)
       check_env
       dojo -c Dojofile-infra "./tasks _wait_ecs"
+      ;;
+  publish-docker)
+      if [ -z $IMAGE_TAG ]; then
+          echo "Please set IMAGE_TAG environment variable"
+          exit 1
+      fi
+      docker build -t ${REPOSITORY_URI}:latest -t ${REPOSITORY_URI}:${IMAGE_TAG} .
+      eval $(docker_login)
+      docker push ${REPOSITORY_URI}:${IMAGE_TAG}
       ;;
   *)
       echo "Invalid command: '${command}'"
