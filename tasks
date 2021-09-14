@@ -196,3 +196,4 @@ case "${command}" in
       ;;
 esac
 set +e
+
