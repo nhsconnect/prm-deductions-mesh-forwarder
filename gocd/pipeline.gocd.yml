@@ -6,13 +6,15 @@ pipelines:
     materials:
       git:
         type: configrepo
+        blacklist:
+          - docs/**/*.*
         destination: prm-deductions-mesh-forwarder
-      forwarder:
+      s3-forwarder:
         git: https://github.com/nhsconnect/prm-gp2gp-mesh-s3-forwarder.git
         branch: master
         destination: prm-gp2gp-mesh-s3-forwarder
     stages:
-      - build_docker:
+      - publish-docker:
           clean_workspace: true
           jobs:
             build:
@@ -24,4 +26,4 @@ pipelines:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - ./tasks build_docker mesh-forwarder
+                      - ./tasks publish-docker mesh-forwarder
