@@ -41,8 +41,8 @@ function check_nhs_service {
 }
 
 function set_image_tag() {
-#  export IMAGE_TAG=$(git rev-parse HEAD | cut -c 1-8)
-   export IMAGE_TAG="70db30dc"
+  export IMAGE_TAG=$(git rev-parse HEAD | cut -c 1-8)
+#   export IMAGE_TAG="70db30dc"
 }
 
 function get_authorisation {
@@ -117,6 +117,7 @@ function docker_login {
 }
 
 function configure_docker_repository_uri {
+  set_image_tag
   docker_login
   get_aws_account_id
   export REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/$IMAGE_REPO_NAME
@@ -182,7 +183,7 @@ case "${command}" in
       dojo -c Dojofile-infra "./tasks _wait_ecs"
       ;;
   publish-docker)
-     configure_docker_repository_uri
+      configure_docker_repository_uri
       if [ -z $IMAGE_TAG ]; then
           echo "Please set IMAGE_TAG environment variable"
           exit 1
