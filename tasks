@@ -196,6 +196,7 @@ _retag_image)
     echo "Please set IMAGE_TAG environment variable"
     exit 1
   fi
+  retag_image
   ;;
 publish-docker)
   configure_docker_repository_uri
