@@ -60,7 +60,7 @@ pipelines:
                 command: /bin/bash
                 arguments:
                   - -c
-                  - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks retag_image
+                  - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks _retag_image
       - *common_stages
 
 #pipelines:
