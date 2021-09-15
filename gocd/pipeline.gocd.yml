@@ -20,16 +20,6 @@ common:
             - -c
             - ./tasks wait_ecs
   common_stages: &common_stages
-    - promote_docker_image:
-        resources:
-          - docker
-        clean_workspace: true
-        tasks:
-          - exec:
-              command: /bin/bash
-              arguments:
-                - -c
-                - ./tasks promote_docker_image
     - deploy:
         clean_workspace: true
         jobs:
@@ -62,31 +52,29 @@ pipelines:
                   - -c
                   - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks _retag_image
       - *common_stages
+  'prm-mesh-forwarder.test':
+    group: deductions
+    label_template: '${git[:8]}'
+    materials:
+      git:
+        type: configrepo
+        blacklist:
+          - docs/**/*.*
+      mesh_s3_forwarder_image:
+        pipeline: prm-gp2gp-mesh-s3-forwarder
+        stage: build_inbox_forwarder
+    environment_variables:
+      NHS_ENVIRONMENT: test
+    stages:
+      - promote_docker_image:
+          resources:
+            - docker
+          clean_workspace: true
+          tasks:
+            - exec:
+                command: /bin/bash
+                arguments:
+                  - -c
+                  - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks promote_docker_image
+      - *common_stages
 
-#pipelines:
-#  "prm-mesh-forwarder":
-#    group: deductions
-#    label_template: "${git[:8]}"
-#    materials:
-#      git:
-#        type: configrepo
-#        blacklist:
-#          - docs/**/*.*
-#        destination: prm-deductions-mesh-forwarder
-#      mesh_s3_forwarder_image:
-#        pipeline: prm-gp2gp-mesh-s3-forwarder
-#        stage: build_inbox_forwarder
-#    stages:
-#      - publish-docker:
-#          clean_workspace: true
-#          jobs:
-#            build:
-#              resources:
-#                - docker
-#              tasks:
-#                - exec:
-#                    working_directory: prm-gp2gp-mesh-s3-forwarder
-#                    command: /bin/bash
-#                    arguments:
-#                      - -c
-#                      - IMAGE_TAG=$GO_PIPELINE_LABEL ./tasks publish-docker repo
