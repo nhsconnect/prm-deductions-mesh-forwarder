@@ -5,7 +5,7 @@ set -Eeo pipefail
 ###########################
 # Local Config Parameters #
 ###########################
-
+set -x
 AWS_DEFAULT_REGION=eu-west-2
 IMAGE_REPO_NAME=deductions/prm-deductions-mesh-forwarder
 export NHS_SERVICE=deductions/prm-deductions-mesh-forwarder
@@ -198,5 +198,6 @@ case "${command}" in
       exit 1
       ;;
 esac
+set +x
 set +e
 
