@@ -1,7 +1,6 @@
 #!/bin/bash
 
-set -x
-
+set -Eeo pipefail
 
 ###########################
 # Local Config Parameters #
@@ -42,10 +41,7 @@ function check_nhs_service {
 }
 
 function set_image_tag {
-  echo $(git rev-parse HEAD | cut -c 1-8)
   export IMAGE_TAG=$(git rev-parse HEAD | cut -c 1-8)
-  echo "image tag is : ${IMAGE_TAG} "
-#   export IMAGE_TAG="70db30dc"
 }
 
 function get_authorisation {
@@ -200,5 +196,5 @@ case "${command}" in
       exit 1
       ;;
 esac
-set +x
+set +e
 
