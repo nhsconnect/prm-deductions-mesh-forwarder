@@ -39,7 +39,8 @@ resource "aws_ecs_task_definition" "task" {
   container_definitions = jsonencode([
     {
       name  = "mesh-s3-forwarder"
-      image = "${data.aws_ecr_repository.mesh_s3_forwarder.repository_url}:${var.task_image_tag}"
+
+      image = "https://${data.aws_ecr_repository.mesh_s3_forwarder.repository_url}:${var.task_image_tag}"
       environment = local.environment_variables
       essential = true
       logConfiguration = {
