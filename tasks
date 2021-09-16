@@ -41,7 +41,7 @@ function check_nhs_service() {
 }
 
 function set_image_tag() {
-  export IMAGE_TAG=$(git rev-parse HEAD | cut -c 1-8)
+  export IMAGE_TAG=$1
 }
 
 function get_authorisation() {
@@ -152,11 +152,12 @@ tf_plan_certs)
   ;;
 _tf_plan)
   _assume_environment_role $NHS_ENVIRONMENT
+  set_image_tag "$IMAGE_TAG"
   tf_plan "$2"
   ;;
 tf_plan)
   check_env
-  dojo -c Dojofile-infra "./tasks _tf_plan $2"
+  dojo -c Dojofile-infra "./tasks _tf_plan $2 $IMAGE_TAG"
   ;;
 _tf_apply)
   _assume_environment_role $NHS_ENVIRONMENT
@@ -164,6 +165,7 @@ _tf_apply)
   ;;
 tf_apply)
   check_env
+  IMAGE_TAG
   dojo -c Dojofile-infra "./tasks _tf_apply"
   ;;
 _get_authorisation_token)

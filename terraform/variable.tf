@@ -4,8 +4,9 @@ variable "region" {
 }
 
 variable "repo_name" {
-  type = string
-  default = "prm-deductions-mesh-forwarder"
+  type        = string
+  description = "Docker repository of Mesh to S3 forwarder"
+  default = "deductions/mesh-forwarder"
 }
 
 variable "component_name" {
@@ -13,7 +14,11 @@ variable "component_name" {
   default = "mesh-forwarder"
 }
 
-variable "task_image_tag" {}
+variable "task_image_tag" {
+  type        = string
+  description = "Docker image tag of Mesh to S3 forwarder"
+}
+
 variable "task_cpu" {}
 variable "task_memory" {}
 
@@ -61,15 +66,4 @@ variable "mesh_client_key_ssm_param_name" {
 variable "mesh_ca_cert_ssm_param_name" {
   type        = string
   description = "Name of SSM parameter containing MESH CA certificate"
-}
-
-variable "forwarder_repo_name" {
-  type        = string
-  description = "Docker repository of Mesh to S3 forwarder"
-  default = "registrations/mesh-inbox-s3-forwarder"
-}
-
-variable "forwarder_image_tag" {
-  type        = string
-  description = "Docker image tag of Mesh to S3 forwarder"
 }

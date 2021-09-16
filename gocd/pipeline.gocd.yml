@@ -61,8 +61,8 @@ pipelines:
         blacklist:
           - docs/**/*.*
       mesh_s3_forwarder_image:
-        pipeline: prm-gp2gp-mesh-s3-forwarder
-        stage: build_inbox_forwarder
+        pipeline: prm-mesh-forwarder.dev
+        stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: test
     stages:
