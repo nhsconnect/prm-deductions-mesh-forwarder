@@ -165,7 +165,6 @@ _tf_apply)
   ;;
 tf_apply)
   check_env
-  IMAGE_TAG
   dojo -c Dojofile-infra "./tasks _tf_apply"
   ;;
 _get_authorisation_token)
@@ -198,6 +197,7 @@ _retag_image)
     echo "Please set IMAGE_TAG environment variable"
     exit 1
   fi
+  docker_login # docker login for ci account
   _assume_environment_role $NHS_ENVIRONMENT
   retag_image
   ;;
