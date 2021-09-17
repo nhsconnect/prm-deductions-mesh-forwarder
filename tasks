@@ -197,6 +197,7 @@ wait_ecs)
   ;;
 _retag_image)
   check_env
+  docker_login
   if [ -z $IMAGE_TAG ]; then
     echo "Please set IMAGE_TAG environment variable"
     exit 1
