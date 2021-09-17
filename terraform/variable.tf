@@ -16,6 +16,7 @@ variable "component_name" {
 
 variable "task_image_tag" {
   type        = string
+  default = "61ad1e1c"
   description = "Docker image tag of Mesh to S3 forwarder"
 }
 
