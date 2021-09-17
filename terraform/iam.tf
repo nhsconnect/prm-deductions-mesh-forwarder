@@ -104,3 +104,53 @@ resource "aws_iam_role_policy_attachment" "mesh_forwarder_logs" {
   policy_arn = aws_iam_policy.mesh_forwarder_logs.arn
 }
 
+resource "aws_iam_role" "ecs_execution" {
+  name               = "${var.environment}-registrations-mesh-forwarder-task"
+  description        = "ECS task role for launching mesh s3 forwarder"
+  assume_role_policy = data.aws_iam_policy_document.ecs-assume-role-policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_execution" {
+  role       = aws_iam_role.ecs_execution.name
+  policy_arn = aws_iam_policy.ecs_execution.arn
+}
+
+resource "aws_iam_policy" "ecs_execution" {
+  name   = "${var.environment}-${var.component_name}-ecs-execution"
+  policy = data.aws_iam_policy_document.ecs_execution.json
+}
+
+data "aws_iam_policy_document" "ecs_execution" {
+  statement {
+    sid = "GetEcrAuthToken"
+    actions = [
+      "ecr:GetAuthorizationToken"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    sid = "DownloadEcrImage"
+    actions = [
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage"
+    ]
+    resources = [
+      data.aws_ecr_repository.mesh_s3_forwarder.arn
+    ]
+  }
+
+  statement {
+    sid = "CloudwatchLogs"
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = [
+      "${aws_cloudwatch_log_group.log_group.arn}:*"
+    ]
+  }
+}

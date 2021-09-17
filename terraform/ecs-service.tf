@@ -7,7 +7,7 @@ locals {
 resource "aws_ecs_service" "mesh_forwarder" {
   name            = "${var.environment}-${var.component_name}-service"
   cluster         = local.ecs_cluster_id
-  task_definition = aws_ecs_task_definition.task.arn
+  task_definition = aws_ecs_task_definition.forwarder.arn
   desired_count   = var.service_desired_count
   launch_type     = "FARGATE"
 
