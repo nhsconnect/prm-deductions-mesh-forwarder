@@ -8,7 +8,7 @@ common:
           command: /bin/bash
           arguments:
             - -c
-            - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks tf_plan create
+            - ./tasks tf_plan create
       - exec:
           command: /bin/bash
           arguments:
