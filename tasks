@@ -43,7 +43,7 @@ function check_nhs_service() {
 function set_image_tag() {
   export IMAGE_TAG="$(echo $1)"
 
-  echo "settinh image tag $IMAGE_TAG"
+  echo "setting image tag $IMAGE_TAG"
 }
 
 function get_authorisation() {
@@ -88,9 +88,9 @@ function tf_plan() {
   tf_init
   terraform get # modules
   if [[ "${operation}" == "create" ]]; then
-    terraform plan -var task_image_tag="61ad1e1c" -var-file=$NHS_ENVIRONMENT.tfvars $TARGET -out="nhs_deployment.tfplan"
+    terraform plan -var task_image_tag="$IMAGE_TAG" -var-file=$NHS_ENVIRONMENT.tfvars $TARGET -out="nhs_deployment.tfplan"
   elif [[ "${operation}" == "destroy" ]]; then
-    terraform plan -var task_image_tag="61ad1e1c" -var-file=$NHS_ENVIRONMENT.tfvars -out="nhs_deployment.tfplan" -destroy
+    terraform plan -var task_image_tag=$IMAGE_TAG -var-file=$NHS_ENVIRONMENT.tfvars -out="nhs_deployment.tfplan" -destroy
   else
     echo "Unknown operation (should be create or destroy), got: ${operation}"
     exit 1
@@ -132,7 +132,6 @@ function retag_image() {
   IMAGE_FULL_URL="${AWS_ACCOUNT_ID}.dkr.ecr.eu-west-2.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"
   docker tag "$SRC_IMAGE_NAME_AND_TAG" "$IMAGE_FULL_URL"
   docker push "$IMAGE_FULL_URL"
-  set_image_tag ${IMAGE_TAG}
 }
 
 ###########
@@ -160,7 +159,7 @@ _tf_plan)
   ;;
 tf_plan)
   check_env
-  dojo -c Dojofile-infra "./tasks _tf_plan $2 $IMAGE_TAG"
+  dojo -c Dojofile-infra "./tasks _tf_plan $2"
   ;;
 _tf_apply)
   _assume_environment_role $NHS_ENVIRONMENT
@@ -197,7 +196,6 @@ wait_ecs)
   ;;
 _retag_image)
   check_env
-  docker_login
   if [ -z $IMAGE_TAG ]; then
     echo "Please set IMAGE_TAG environment variable"
     exit 1

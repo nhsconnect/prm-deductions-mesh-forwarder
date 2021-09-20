@@ -20,7 +20,7 @@ resource "aws_ecs_task_definition" "forwarder" {
   container_definitions = jsonencode([
     {
       name  = "mesh-forwarder"
-      image = "${data.aws_ecr_repository.mesh_s3_forwarder.repository_url}:${var.repo_name}:${var.task_image_tag}"
+      image = "${data.aws_ecr_repository.mesh_s3_forwarder.repository_url}:${var.task_image_tag}"
       environment = [
         { "name" : "MESH_URL", "value" : var.mesh_url },
         { "name" : "MESH_MAILBOX_SSM_PARAM_NAME", "value" : var.mesh_mailbox_ssm_param_name },
@@ -37,7 +37,7 @@ resource "aws_ecs_task_definition" "forwarder" {
         options = {
           awslogs-group         = aws_cloudwatch_log_group.log_group.name
           awslogs-region        = var.region
-          awslogs-stream-prefix = "log"
+          awslogs-stream-prefix = var.task_image_tag
         }
       }
     }

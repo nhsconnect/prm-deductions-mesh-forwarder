@@ -40,6 +40,7 @@ pipelines:
         stage: build_inbox_forwarder
     environment_variables:
       NHS_ENVIRONMENT: dev
+      IMAGE_TAG: $GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE
     stages:
       - build:
           resources:
@@ -50,7 +51,7 @@ pipelines:
                 command: /bin/bash
                 arguments:
                   - -c
-                  - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks _retag_image
+                  - ./tasks _retag_image
       - *common_stages
   'prm-mesh-forwarder.test':
     group: deductions
