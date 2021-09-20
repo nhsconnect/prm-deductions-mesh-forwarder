@@ -58,7 +58,7 @@ data "aws_iam_policy_document" "ssm_policy_doc" {
       "ssm:Get*"
     ]
     resources = [
-      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/repo/${var.environment}/user-input/mesh-mailbox*",
+      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/repo/${var.environment}/user-input/external/mesh-mailbox*",
     ]
   }
 }
