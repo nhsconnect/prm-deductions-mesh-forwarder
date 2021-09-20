@@ -157,7 +157,7 @@ _tf_plan)
   _assume_environment_role $NHS_ENVIRONMENT
   set_image_tag "$IMAGE_TAG"
   tf_plan "$2" "$IMAGE_TAG"
-  ;;x
+  ;;
 tf_plan)
   check_env
   dojo -c Dojofile-infra "./tasks _tf_plan $2"
