@@ -11,8 +11,6 @@ pipelines:
       mesh_s3_forwarder_image:
         pipeline: prm-gp2gp-mesh-s3-forwarder
         stage: build_inbox_forwarder
-    environment_variables:
-      IMAGE_TAG: $GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE
     stages:
       - build:
           resources:
@@ -23,4 +21,4 @@ pipelines:
                 command: /bin/bash
                 arguments:
                   - -c
-                  - ./tasks _push_registrations_forwarder_image_to_repo_ecr
+                  - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks _push_registrations_forwarder_image_to_repo_ecr
