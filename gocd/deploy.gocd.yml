@@ -8,12 +8,12 @@ common:
           command: /bin/bash
           arguments:
             - -c
-            - IMAGE_TAG=$IMAGE_TAG ./tasks promote_docker_image
+            - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks promote_docker_image
       - exec:
           command: /bin/bash
           arguments:
             - -c
-            - IMAGE_TAG=$IMAGE_TAG ./tasks tf_plan create
+            - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks tf_plan create
       - exec:
           command: /bin/bash
           arguments:
@@ -44,7 +44,6 @@ pipelines:
         stage: build
     environment_variables:
       NHS_ENVIRONMENT: dev
-      IMAGE_TAG: $IMAGE_TAG
     stages:
       - *common_stages
   'prm-mesh-forwarder.test':
@@ -60,7 +59,6 @@ pipelines:
         stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: test
-      IMAGE_TAG: $IMAGE_TAG
     stages:
       - *common_stages
 
