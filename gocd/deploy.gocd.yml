@@ -8,12 +8,12 @@ common:
           command: /bin/bash
           arguments:
             - -c
-            - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks promote_docker_image
+            - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_FORWARDER_IMPORTED_IMAGE ./tasks promote_docker_image
       - exec:
           command: /bin/bash
           arguments:
             - -c
-            - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks tf_plan create
+            - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_FORWARDER_IMPORTED_IMAGE ./tasks tf_plan create
       - exec:
           command: /bin/bash
           arguments:
@@ -31,7 +31,7 @@ common:
           deploy: *deploy_job
 
 pipelines:
-  'prm-mesh-forwarder.dev':
+  'prm-deductions-mesh-forwarder.dev':
     group: deductions
     label_template: '${git[:8]}'
     materials:
@@ -39,14 +39,14 @@ pipelines:
         type: configrepo
         blacklist:
           - docs/**/*.*
-      mesh_s3_forwarder_image:
-        pipeline: prm-mesh-forwarder
-        stage: build
+      mesh_forwarder_image_import:
+        pipeline: prm-deductions-mesh-forwarder
+        stage: import
     environment_variables:
       NHS_ENVIRONMENT: dev
     stages:
       - *common_stages
-  'prm-mesh-forwarder.test':
+  'prm-deductions-mesh-forwarder.test':
     group: deductions
     label_template: '${git[:8]}'
     materials:
@@ -54,8 +54,8 @@ pipelines:
         type: configrepo
         blacklist:
           - docs/**/*.*
-      mesh_s3_forwarder_image:
-        pipeline: prm-mesh-forwarder.dev
+      mesh_forwarder_dev:
+        pipeline: prm-deductions-mesh-forwarder.dev
         stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: test
