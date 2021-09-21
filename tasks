@@ -195,7 +195,6 @@ wait_ecs)
   dojo -c Dojofile-infra "./tasks _wait_ecs"
   ;;
 _push_registrations_forwarder_image_to_repo_ecr)
-  check_env
   if [ -z $IMAGE_TAG ]; then
     echo "Please set IMAGE_TAG environment variable"
     exit 1
