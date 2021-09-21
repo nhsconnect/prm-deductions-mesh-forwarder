@@ -40,8 +40,8 @@ pipelines:
         blacklist:
           - docs/**/*.*
       mesh_s3_forwarder_image:
-        pipeline: prm-gp2gp-mesh-s3-forwarder
-        stage: build_inbox_forwarder
+        pipeline: prm-mesh-forwarder
+        stage: build
     environment_variables:
       NHS_ENVIRONMENT: dev
       IMAGE_TAG: $IMAGE_TAG
