@@ -8,7 +8,12 @@ common:
           command: /bin/bash
           arguments:
             - -c
-            - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks tf_plan create
+            - IMAGE_TAG=$IMAGE_TAG ./tasks promote_docker_image
+      - exec:
+          command: /bin/bash
+          arguments:
+            - -c
+            - IMAGE_TAG=$IMAGE_TAG ./tasks tf_plan create
       - exec:
           command: /bin/bash
           arguments:
@@ -25,7 +30,6 @@ common:
         jobs:
           deploy: *deploy_job
 
-
 pipelines:
   'prm-mesh-forwarder.dev':
     group: deductions
@@ -40,17 +44,8 @@ pipelines:
         stage: build_inbox_forwarder
     environment_variables:
       NHS_ENVIRONMENT: dev
+      IMAGE_TAG: $IMAGE_TAG
     stages:
-      - build:
-          resources:
-            - docker
-          clean_workspace: true
-          tasks:
-            - exec:
-                command: /bin/bash
-                arguments:
-                  - -c
-                  - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks _retag_image
       - *common_stages
   'prm-mesh-forwarder.test':
     group: deductions
@@ -65,16 +60,7 @@ pipelines:
         stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: test
+      IMAGE_TAG: $IMAGE_TAG
     stages:
-      - promote_docker_image:
-          resources:
-            - docker
-          clean_workspace: true
-          tasks:
-            - exec:
-                command: /bin/bash
-                arguments:
-                  - -c
-                  - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks promote_docker_image
       - *common_stages
 

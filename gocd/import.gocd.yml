@@ -1,0 +1,26 @@
+format_version: 4
+pipelines:
+  'prm-mesh-forwarder':
+    group: deductions
+    label_template: '${git[:8]}'
+    materials:
+      git:
+        type: configrepo
+        blacklist:
+          - docs/**/*.*
+      mesh_s3_forwarder_image:
+        pipeline: prm-gp2gp-mesh-s3-forwarder
+        stage: build_inbox_forwarder
+    environment_variables:
+      IMAGE_TAG: $GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE
+    stages:
+      - build:
+          resources:
+            - docker
+          clean_workspace: true
+          tasks:
+            - exec:
+                command: /bin/bash
+                arguments:
+                  - -c
+                  - ./tasks _push_registrations_forwarder_image_to_repo_ecr

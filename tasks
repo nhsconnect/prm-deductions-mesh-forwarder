@@ -125,11 +125,10 @@ function configure_docker_repository_uri() {
   export REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/$IMAGE_REPO_NAME
 }
 
-function retag_image() {
-  SRC_IMAGE_NAME_AND_TAG="327778747031.dkr.ecr.eu-west-2.amazonaws.com/registrations/mesh-inbox-s3-forwarder:${IMAGE_TAG}"
-  docker pull "$SRC_IMAGE_NAME_AND_TAG"
-  _assume_environment_role $NHS_ENVIRONMENT
+function push_registrations_forwarder_image_to_repo_ecr() {
   get_aws_account_id
+  SRC_IMAGE_NAME_AND_TAG="${AWS_ACCOUNT_ID}.dkr.ecr.eu-west-2.amazonaws.com/registrations/mesh-inbox-s3-forwarder:${IMAGE_TAG}"
+  docker pull "$SRC_IMAGE_NAME_AND_TAG"
   IMAGE_FULL_URL="${AWS_ACCOUNT_ID}.dkr.ecr.eu-west-2.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"
   docker tag "$SRC_IMAGE_NAME_AND_TAG" "$IMAGE_FULL_URL"
   docker push "$IMAGE_FULL_URL"
@@ -195,13 +194,13 @@ wait_ecs)
   check_env
   dojo -c Dojofile-infra "./tasks _wait_ecs"
   ;;
-_retag_image)
+_push_registrations_forwarder_image_to_repo_ecr)
   check_env
   if [ -z $IMAGE_TAG ]; then
     echo "Please set IMAGE_TAG environment variable"
     exit 1
   fi
-  retag_image
+  push_registrations_forwarder_image_to_repo_ecr
   ;;
 *)
   echo "Invalid command: '${command}'"
