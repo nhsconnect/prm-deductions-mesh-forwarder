@@ -42,7 +42,6 @@ pipelines:
       mesh_forwarder_imported_image:
         pipeline: prm-gp2gp-mesh-s3-forwarder
         stage: build_inbox_forwarder
-        ignore_for_scheduling: true
       mesh_forwarder_image_import:
         pipeline: prm-deductions-mesh-forwarder
         stage: import
@@ -61,7 +60,6 @@ pipelines:
       mesh_forwarder_imported_image:
         pipeline: prm-gp2gp-mesh-s3-forwarder
         stage: build_inbox_forwarder
-        ignore_for_scheduling: true
       mesh_forwarder_dev:
         pipeline: prm-deductions-mesh-forwarder.dev
         stage: deploy
