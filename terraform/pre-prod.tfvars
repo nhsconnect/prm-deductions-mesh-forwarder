@@ -10,7 +10,7 @@ task_cpu    = 256
 task_memory = 512
 
 mesh_url="https://mesh.spineservices.nhs.uk"
-mesh_mailbox_ssm_param_name="/repo/pre-prod/user-input/external/mesh-mailbox-name"
+mesh_mailbox_ssm_param_name="/repo/pre-prod/user-input/external/mesh-mailbox-id"
 mesh_password_ssm_param_name="/repo/pre-prod/user-input/external/mesh-mailbox-password"
 mesh_shared_key_ssm_param_name="/repo/pre-prod/user-input/external/mesh-mailbox-shared-secret"
 mesh_client_cert_ssm_param_name="/repo/pre-prod/user-input/external/mesh-mailbox-client-cert"

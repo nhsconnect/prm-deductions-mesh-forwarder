@@ -105,7 +105,7 @@ resource "aws_iam_role_policy_attachment" "mesh_forwarder_logs" {
 }
 
 resource "aws_iam_role" "ecs_execution" {
-  name               = "${var.environment}-registrations-mesh-forwarder-task"
+  name               = "${var.environment}-deductions-mesh-forwarder-task"
   description        = "ECS task role for launching mesh s3 forwarder"
   assume_role_policy = data.aws_iam_policy_document.ecs-assume-role-policy.json
 }
