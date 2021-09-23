@@ -1,6 +1,6 @@
 environment    = "pre-prod"
 
-service_desired_count = "2"
+service_desired_count = "1"
 
 log_level = "info"
 
@@ -9,7 +9,7 @@ poll_frequency = 60
 task_cpu    = 256
 task_memory = 512
 
-mesh_url="https://mesh.spineservices.nhs.uk"
+mesh_url="https://msg.intspineservices.nhs.uk"
 mesh_mailbox_ssm_param_name="/repo/pre-prod/user-input/external/mesh-mailbox-id"
 mesh_password_ssm_param_name="/repo/pre-prod/user-input/external/mesh-mailbox-password"
 mesh_shared_key_ssm_param_name="/repo/pre-prod/user-input/external/mesh-mailbox-shared-secret"

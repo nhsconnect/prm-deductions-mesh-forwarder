@@ -7,7 +7,7 @@ poll_frequency = 60
 task_cpu    = 256
 task_memory = 512
 
-mesh_url="https://mesh.spineservices.nhs.uk"
+mesh_url="https://msg.intspineservices.nhs.uk"
 mesh_mailbox_ssm_param_name="/repo/test/user-input/external/mesh-mailbox-id "
 mesh_password_ssm_param_name="/repo/test/user-input/external/mesh-mailbox-password"
 mesh_shared_key_ssm_param_name="/repo/test/user-input/external/mesh-mailbox-shared-secret"
