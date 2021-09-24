@@ -9,6 +9,11 @@ resource "aws_kms_key" "sns_sqs_encryption" {
   }
 }
 
+resource "aws_kms_alias" "sns_sqs_encryption" {
+  name          = "alias/sns-sqs-encryption-kms-key"
+  target_key_id = aws_kms_key.sns_sqs_encryption.id
+}
+
 data "aws_iam_policy_document" "sns_sqs_kms_key_policy_doc" {
   statement {
     effect = "Allow"
