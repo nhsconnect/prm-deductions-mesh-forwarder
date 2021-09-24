@@ -14,8 +14,19 @@ data "aws_iam_policy_document" "sns_sqs_kms_key_policy_doc" {
     effect = "Allow"
 
     principals {
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+      type = "AWS"
+    }
+    actions = ["kms:*"]
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+
+    principals {
       identifiers = ["sns.amazonaws.com"]
-      type        = "Service"
+      type = "Service"
     }
 
     actions = [
