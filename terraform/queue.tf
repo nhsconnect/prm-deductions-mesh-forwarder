@@ -28,31 +28,33 @@ resource "aws_sns_topic_subscription" "nems_events_to_observability_queue" {
   endpoint             = aws_sqs_queue.observability.arn
 }
 
-// TODO: refactor to use terraform policy document resource
 resource "aws_sqs_queue_policy" "nems_events_subscription" {
   queue_url = aws_sqs_queue.observability.id
-  policy    = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "sns.amazonaws.com"
-      },
-      "Action": [
-        "sqs:SendMessage"
-      ],
-      "Resource": [
-        "${aws_sqs_queue.observability.arn}"
-      ],
-      "Condition": {
-        "ArnEquals": {
-          "aws:SourceArn": "${aws_sns_topic.nems_events.arn}"
-        }
-      }
-    }
-  ]
+  policy    = data.aws_iam_policy_document.sqs_policy_doc.json
 }
-EOF
+
+data "aws_iam_policy_document" "sqs_policy_doc" {
+  statement {
+
+    effect = "Allow"
+
+    actions = [
+      "sqs:SendMessage"
+    ]
+
+    principals {
+      identifiers = ["sns.amazonaws.com"]
+      type        = "Service"
+    }
+
+    resources = [
+      aws_sqs_queue.observability.arn
+    ]
+
+    condition {
+      test     = "ArnEquals"
+      values   = [aws_sns_topic.nems_events.arn]
+      variable = "aws:SourceArn"
+    }
+  }
 }
