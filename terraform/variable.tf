@@ -67,3 +67,5 @@ variable "mesh_ca_cert_ssm_param_name" {
   type        = string
   description = "Name of SSM parameter containing MESH CA certificate"
 }
+
+variable "message_destination" {}

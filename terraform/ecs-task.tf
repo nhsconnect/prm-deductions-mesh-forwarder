@@ -11,7 +11,8 @@ locals {
     { name : "MESH_CLIENT_CERT_SSM_PARAM_NAME", value : var.mesh_client_cert_ssm_param_name },
     { name : "MESH_CLIENT_KEY_SSM_PARAM_NAME", value : var.mesh_client_key_ssm_param_name },
     { name : "MESH_CA_CERT_SSM_PARAM_NAME", value : var.mesh_ca_cert_ssm_param_name },
-    { name : "S3_BUCKET_NAME", value : aws_s3_bucket.mesh-temp-destination.bucket }
+    { name : "SNS_TOPIC_ARN", value : aws_sns_topic.nems_events.arn },
+    { name : "MESSAGE_DESTINATION", value : var.message_destination }
   ]
 }
 
