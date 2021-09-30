@@ -63,6 +63,28 @@ data "aws_iam_policy_document" "ssm_policy_doc" {
   }
 }
 
+data "aws_iam_policy_document" "sns_policy_doc" {
+  statement {
+    actions = [
+      "sns:Publish"
+    ]
+    resources = [
+      aws_sns_topic.nems_events.arn,
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "kms_policy_doc" {
+  statement {
+    actions = [
+      "kms:*"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+}
+
 resource "aws_iam_role" "mesh_forwarder" {
   name               = "${var.environment}-${var.component_name}-EcsTaskRole"
   assume_role_policy = data.aws_iam_policy_document.ecs-assume-role-policy.json
@@ -89,6 +111,16 @@ resource "aws_iam_policy" "mesh_forwarder_ssm" {
   policy = data.aws_iam_policy_document.ssm_policy_doc.json
 }
 
+resource "aws_iam_policy" "mesh_forwarder_sns" {
+  name   = "${var.environment}-${var.component_name}-sns"
+  policy = data.aws_iam_policy_document.sns_policy_doc.json
+}
+
+resource "aws_iam_policy" "mesh_forwarder_kms" {
+  name   = "${var.environment}-${var.component_name}-kms"
+  policy = data.aws_iam_policy_document.kms_policy_doc.json
+}
+
 resource "aws_iam_role_policy_attachment" "mesh_forwarder_ecr" {
   role       = aws_iam_role.mesh_forwarder.name
   policy_arn = aws_iam_policy.mesh_forwarder_ecr.arn
@@ -97,6 +129,16 @@ resource "aws_iam_role_policy_attachment" "mesh_forwarder_ecr" {
 resource "aws_iam_role_policy_attachment" "mesh_forwarder_ssm" {
   role       = aws_iam_role.mesh_forwarder.name
   policy_arn = aws_iam_policy.mesh_forwarder_ssm.arn
+}
+
+resource "aws_iam_role_policy_attachment" "mesh_forwarder_sns" {
+  role       = aws_iam_role.mesh_forwarder.name
+  policy_arn = aws_iam_policy.mesh_forwarder_sns.arn
+}
+
+resource "aws_iam_role_policy_attachment" "mesh_forwarder_kms" {
+  role       = aws_iam_role.mesh_forwarder.name
+  policy_arn = aws_iam_policy.mesh_forwarder_kms.arn
 }
 
 resource "aws_iam_role_policy_attachment" "mesh_forwarder_logs" {
