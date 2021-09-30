@@ -140,69 +140,69 @@ function push_registrations_forwarder_image_to_repo_ecr() {
 
 command="$1"
 case "${command}" in
-tf)
-  check_env
-  dojo -c Dojofile-infra "bash"
-  ;;
-_tf_plan_certs)
-  _assume_environment_role $NHS_ENVIRONMENT
-  tf_plan "$2" true
-  ;;
-tf_plan_certs)
-  check_env
-  dojo -c Dojofile-infra "./tasks _tf_plan_certs $2"
-  ;;
-_tf_plan)
-  _assume_environment_role $NHS_ENVIRONMENT
-  set_image_tag "$IMAGE_TAG"
-  tf_plan "$2" "$IMAGE_TAG"
-  ;;
-tf_plan)
-  check_env
-  dojo -c Dojofile-infra "./tasks _tf_plan $2"
-  ;;
-_tf_apply)
-  _assume_environment_role $NHS_ENVIRONMENT
-  tf_apply
-  ;;
-tf_apply)
-  check_env
-  dojo -c Dojofile-infra "./tasks _tf_apply"
-  ;;
-_get_authorisation_token)
-  _assume_environment_role $NHS_ENVIRONMENT
-  get_authorisation
-  python auth-creation.py $SHARED_SECRET $MAIL_BOX_ID $MAIL_BOX_PASS
-  ;;
-get_authorisation_token)
-  check_env
-  dojo -c Dojofile-infra "./tasks _get_authorisation_token"
-  ;;
-promote_docker_image)
-  check_env
-  promote_docker_image "$IMAGE_REPO_NAME:$IMAGE_TAG" "$NHS_ENVIRONMENT"
-  ;;
-_wait_ecs)
-  _assume_environment_role $NHS_ENVIRONMENT
-  aws ecs wait services-stable \
-    --region $AWS_DEFAULT_REGION \
-    --cluster $NHS_ENVIRONMENT-${NHS_SERVICE}-ecs-cluster \
-    --services $NHS_ENVIRONMENT-mesh-forwarder-service
-  ;;
-wait_ecs)
-  check_env
-  dojo -c Dojofile-infra "./tasks _wait_ecs"
-  ;;
-_push_registrations_forwarder_image_to_repo_ecr)
-  if [ -z $IMAGE_TAG ]; then
-    echo "Please set IMAGE_TAG environment variable"
+  tf)
+    check_env
+    dojo -c Dojofile-infra "bash"
+    ;;
+  _tf_plan_certs)
+    _assume_environment_role $NHS_ENVIRONMENT
+    tf_plan "$2" true
+    ;;
+  tf_plan_certs)
+    check_env
+    dojo -c Dojofile-infra "./tasks _tf_plan_certs $2"
+    ;;
+  _tf_plan)
+    _assume_environment_role $NHS_ENVIRONMENT
+    set_image_tag "$IMAGE_TAG"
+    tf_plan "$2" "$IMAGE_TAG"
+    ;;
+  tf_plan)
+    check_env
+    dojo -c Dojofile-infra "./tasks _tf_plan $2"
+    ;;
+  _tf_apply)
+    _assume_environment_role $NHS_ENVIRONMENT
+    tf_apply
+    ;;
+  tf_apply)
+    check_env
+    dojo -c Dojofile-infra "./tasks _tf_apply"
+    ;;
+  _get_authorisation_token)
+    _assume_environment_role $NHS_ENVIRONMENT
+    get_authorisation
+    python auth-creation.py $SHARED_SECRET $MAIL_BOX_ID $MAIL_BOX_PASS
+    ;;
+  get_authorisation_token)
+    check_env
+    dojo -c Dojofile-infra "./tasks _get_authorisation_token"
+    ;;
+  promote_docker_image)
+    check_env
+    promote_docker_image "$IMAGE_REPO_NAME:$IMAGE_TAG" "$NHS_ENVIRONMENT"
+    ;;
+  _wait_ecs)
+    _assume_environment_role $NHS_ENVIRONMENT
+    aws ecs wait services-stable \
+      --region $AWS_DEFAULT_REGION \
+      --cluster $NHS_ENVIRONMENT-${NHS_SERVICE}-ecs-cluster \
+      --services $NHS_ENVIRONMENT-mesh-forwarder-service
+    ;;
+  wait_ecs)
+    check_env
+    dojo -c Dojofile-infra "./tasks _wait_ecs"
+    ;;
+  _push_registrations_forwarder_image_to_repo_ecr)
+    if [ -z $IMAGE_TAG ]; then
+      echo "Please set IMAGE_TAG environment variable"
+      exit 1
+    fi
+    push_registrations_forwarder_image_to_repo_ecr
+    ;;
+  *)
+    echo "Invalid command: '${command}'"
     exit 1
-  fi
-  push_registrations_forwarder_image_to_repo_ecr
-  ;;
-*)
-  echo "Invalid command: '${command}'"
-  exit 1
-  ;;
+    ;;
 esac
 set +e

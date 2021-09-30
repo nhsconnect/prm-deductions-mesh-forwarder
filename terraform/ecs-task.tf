@@ -22,16 +22,7 @@ resource "aws_ecs_task_definition" "forwarder" {
     {
       name  = "mesh-forwarder"
       image = "${data.aws_ecr_repository.mesh_s3_forwarder.repository_url}:${var.task_image_tag}"
-      environment = [
-        { name : "MESH_URL", value : var.mesh_url },
-        { name : "MESH_MAILBOX_SSM_PARAM_NAME", value : var.mesh_mailbox_ssm_param_name },
-        { name : "MESH_PASSWORD_SSM_PARAM_NAME", value : var.mesh_password_ssm_param_name },
-        { name : "MESH_SHARED_KEY_SSM_PARAM_NAME", value : var.mesh_shared_key_ssm_param_name },
-        { name : "MESH_CLIENT_CERT_SSM_PARAM_NAME", value : var.mesh_client_cert_ssm_param_name },
-        { name : "MESH_CLIENT_KEY_SSM_PARAM_NAME", value : var.mesh_client_key_ssm_param_name },
-        { name : "MESH_CA_CERT_SSM_PARAM_NAME", value : var.mesh_ca_cert_ssm_param_name },
-        { name : "S3_BUCKET_NAME", value : aws_s3_bucket.mesh-temp-destination.bucket }
-      ]
+      environment = local.environment_variables
       essential = true
       logConfiguration = {
         logDriver = "awslogs"
