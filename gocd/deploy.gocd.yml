@@ -40,7 +40,7 @@ pipelines:
         blacklist:
           - docs/**/*.*
       mesh_forwarder_imported_image:
-        pipeline: prm-gp2gp-mesh-s3-forwarder
+        pipeline: prm-mesh-aws-forwarder
         stage: build_inbox_forwarder
       mesh_forwarder_image_import:
         pipeline: prm-deductions-mesh-forwarder
@@ -58,7 +58,7 @@ pipelines:
         blacklist:
           - docs/**/*.*
       mesh_forwarder_imported_image:
-        pipeline: prm-gp2gp-mesh-s3-forwarder
+        pipeline: prm-mesh-aws-forwarder
         stage: build_inbox_forwarder
       mesh_forwarder_dev:
         pipeline: prm-deductions-mesh-forwarder.dev
@@ -76,7 +76,7 @@ pipelines:
         blacklist:
           - docs/**/*.*
       mesh_forwarder_imported_image:
-        pipeline: prm-gp2gp-mesh-s3-forwarder
+        pipeline: prm-mesh-aws-forwarder
         stage: build_inbox_forwarder
       mesh_forwarder_test:
         pipeline: prm-deductions-mesh-forwarder.test

@@ -9,7 +9,7 @@ pipelines:
         blacklist:
           - docs/**/*.*
       mesh_forwarder_imported_image:
-        pipeline: prm-gp2gp-mesh-s3-forwarder
+        pipeline: prm-mesh-aws-forwarder
         stage: build_inbox_forwarder
     stages:
       - import:
