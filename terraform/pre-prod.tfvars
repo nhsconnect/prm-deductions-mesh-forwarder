@@ -4,7 +4,7 @@ service_desired_count = "1"
 
 log_level = "info"
 
-poll_frequency = 60
+poll_frequency = "60"
 
 task_cpu    = 256
 task_memory = 512
