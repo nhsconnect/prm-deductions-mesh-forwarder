@@ -14,17 +14,6 @@ resource "aws_kms_alias" "sns_sqs_encryption" {
   target_key_id = aws_kms_key.sns_sqs_encryption.id
 }
 
-resource "aws_ssm_parameter" "sns_sqs_kms_key_id" {
-  name = "/repo/${var.environment}/output/${var.repo_name}/sns_sqs_kms_key_id"
-  type = "String"
-  value = aws_kms_key.sns_sqs_encryption.id
-
-  tags = {
-    CreatedBy   = var.repo_name
-    Environment = var.environment
-  }
-}
-
 data "aws_iam_policy_document" "sns_sqs_kms_key_policy_doc" {
   statement {
     effect = "Allow"
@@ -113,5 +102,28 @@ data "aws_iam_policy_document" "sqs_policy_doc" {
       values   = [aws_sns_topic.nems_events.arn]
       variable = "aws:SourceArn"
     }
+  }
+}
+
+
+resource "aws_ssm_parameter" "sns_sqs_kms_key_id" {
+  name = "/repo/${var.environment}/output/${var.repo_name}/sns_sqs_kms_key_id"
+  type = "String"
+  value = aws_kms_key.sns_sqs_encryption.id
+
+  tags = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
+}
+
+resource "aws_ssm_parameter" "nems_events_topic_arn" {
+  name = "/repo/${var.environment}/output/${var.repo_name}/nems_events_topic_arn"
+  type = "String"
+  value = aws_sns_topic.nems_events.arn
+
+  tags = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
   }
 }
