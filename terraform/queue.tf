@@ -3,7 +3,7 @@ resource "aws_kms_key" "sns_sqs_encryption" {
   policy = data.aws_iam_policy_document.sns_sqs_kms_key_policy_doc.json
 
   tags = {
-    Name = "${var.environment}-${var.component_name}-sns-sqs-encryption-kms-key"
+    Name = "${var.environment}-sns-sqs-encryption-kms-key"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
@@ -12,6 +12,17 @@ resource "aws_kms_key" "sns_sqs_encryption" {
 resource "aws_kms_alias" "sns_sqs_encryption" {
   name          = "alias/sns-sqs-encryption-kms-key"
   target_key_id = aws_kms_key.sns_sqs_encryption.id
+}
+
+resource "aws_ssm_parameter" "sns_sqs_kms_key_id" {
+  name = "/repo/${var.environment}/output/${var.repo_name}/sns_sqs_kms_key_id"
+  type = "String"
+  value = aws_kms_key.sns_sqs_encryption.id
+
+  tags = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
 }
 
 data "aws_iam_policy_document" "sns_sqs_kms_key_policy_doc" {
