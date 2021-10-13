@@ -1,7 +1,7 @@
 format_version: 4
 pipelines:
   'prm-deductions-mesh-forwarder':
-    group: deductions
+    group: automatic-trigger
     label_template: '${git[:8]}'
     materials:
       git:

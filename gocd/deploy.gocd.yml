@@ -32,7 +32,7 @@ common:
 
 pipelines:
   'prm-deductions-mesh-forwarder.dev':
-    group: deductions
+    group: automatic-trigger
     label_template: '${git[:8]}'
     materials:
       git:
@@ -50,7 +50,7 @@ pipelines:
     stages:
       - *common_stages
   'prm-deductions-mesh-forwarder.test':
-    group: deductions
+    group: automatic-trigger
     label_template: '${git[:8]}'
     materials:
       git:
@@ -68,7 +68,7 @@ pipelines:
     stages:
       - *common_stages
   'prm-deductions-mesh-forwarder.pre-prod':
-    group: deductions
+    group: automatic-trigger
     label_template: '${git[:8]}'
     materials:
       git:
