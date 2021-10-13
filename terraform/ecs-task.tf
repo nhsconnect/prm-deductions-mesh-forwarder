@@ -69,5 +69,5 @@ resource "aws_security_group" "mesh-forwarder-ecs-tasks-sg" {
 }
 
 data "aws_ecr_repository" "mesh_s3_forwarder" {
-  name = var.repo_name
+  name = "deductions/${var.component_name}"
 }

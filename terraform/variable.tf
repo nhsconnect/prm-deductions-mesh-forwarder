@@ -6,7 +6,7 @@ variable "region" {
 variable "repo_name" {
   type        = string
   description = "Docker repository of Mesh to S3 forwarder"
-  default = "deductions/mesh-forwarder"
+  default = "prm-deductions-mesh-forwarder"
 }
 
 variable "component_name" {
