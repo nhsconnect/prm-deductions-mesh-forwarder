@@ -177,10 +177,16 @@ case "${command}" in
     dojo -c Dojofile-infra "./tasks _get_authorisation_token"
     ;;
   _create_nems_subscription)
-    pushd nems-subscriber && pip3 install -r requirements.txt && python3 subscribe.py
+    pushd nems-subscriber && pip3 install -r requirements.txt && python3 create_subscription.py
     ;;
   create_nems_subscription)
     dojo -c Dojofile-python "./tasks _create_nems_subscription"
+    ;;
+  _read_nems_subscription)
+    pushd nems-subscriber && pip3 install -r requirements.txt && python3 read_subscription.py
+    ;;
+  read_nems_subscription)
+    dojo -c Dojofile-python "./tasks _read_nems_subscription"
     ;;
   promote_docker_image)
     check_env
