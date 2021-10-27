@@ -188,6 +188,12 @@ case "${command}" in
   read_nems_subscription)
     dojo -c Dojofile-python "./tasks _read_nems_subscription"
     ;;
+  _delete_nems_subscription)
+    pushd nems-subscriber && pip3 install -r requirements.txt && python3 delete_subscription.py
+    ;;
+  delete_nems_subscription)
+    dojo -c Dojofile-python "./tasks _delete_nems_subscription"
+    ;;
   promote_docker_image)
     check_env
     promote_docker_image "$IMAGE_REPO_NAME:$IMAGE_TAG" "$NHS_ENVIRONMENT"
