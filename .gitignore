@@ -58,3 +58,4 @@ coverage
 
 #local certs
 *.pem
+.vscode/

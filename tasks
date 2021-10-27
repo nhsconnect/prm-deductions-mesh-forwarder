@@ -176,6 +176,12 @@ case "${command}" in
     check_env
     dojo -c Dojofile-infra "./tasks _get_authorisation_token"
     ;;
+  _create_nems_subscription)
+    pushd nems-subscriber && pip3 install -r requirements.txt && python3 subscribe.py
+    ;;
+  create_nems_subscription)
+    dojo -c Dojofile-python "./tasks _create_nems_subscription"
+    ;;
   promote_docker_image)
     check_env
     promote_docker_image "$IMAGE_REPO_NAME:$IMAGE_TAG" "$NHS_ENVIRONMENT"
