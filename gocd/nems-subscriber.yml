@@ -1,0 +1,25 @@
+format_version: 4
+pipelines:
+  'nems-subscriber':
+    group: automatic-trigger
+    label_template: "${git[:8]}"
+    materials:
+      git:
+        type: configrepo
+        whitelist:
+          - nems-subscriber/**/*.*
+          - gocd/nems-subscriber.yml
+    stages:
+      - test:
+          clean_workspace: true
+          jobs:
+            test:
+              resources:
+                - docker
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks test_nems_subscriber
+

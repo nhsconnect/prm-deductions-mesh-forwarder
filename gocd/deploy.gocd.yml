@@ -31,21 +31,6 @@ common:
           deploy: *deploy_job
 
 pipelines:
-  'nems-subscriber':
-    group: automatic-trigger
-    label_template: '${git[:8]}'
-    materials:
-      git:
-        type: configrepo
-    stages:
-      test:
-        resources:
-          - docker
-        tasks:
-          - exec:
-              command: ./tasks
-              arguments:
-                - test_nems_subscriber
   'prm-deductions-mesh-forwarder.dev':
     group: automatic-trigger
     label_template: '${git[:8]}'
