@@ -38,7 +38,7 @@ pipelines:
       git:
         type: configrepo
     stages:
-      - test:
+      test:
         resources:
           - docker
         tasks:
