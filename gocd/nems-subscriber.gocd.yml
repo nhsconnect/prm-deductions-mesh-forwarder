@@ -11,7 +11,7 @@ pipelines:
           - gocd/nems-subscriber.gocd.yml
     stages:
       - test:
-          clean_workspace: true
+          clean_workspace: false
           jobs:
             test:
               resources:
