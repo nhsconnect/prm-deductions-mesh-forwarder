@@ -1,42 +1,43 @@
 import requests
-import os
+
+from config import read_subscribe_config_from_env
+
 from generate_auth_token import generate_auth_token
 
+def create_subscription(config):
+    token = generate_auth_token(config.asid, config.api_host, config.ods_code)
 
-asid = os.environ['OUR_ASID']
-ods_code = os.environ['OUR_ODS_CODE']
-api_host = os.environ['API_HOST']
-mesh_mailbox_id = os.environ['MESH_MAILBOX_ID']
+    print('Requesting Create Subscription...')
+    subscribe_payload = '<Subscription xmlns="http://hl7.org/fhir">' + \
+                        '<meta>' + \
+                        '	<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/EMS-Subscription-1"/>' + \
+                        '</meta>' + \
+                        '<status value="requested"/>' + \
+                        '<contact>' + \
+                        '	<system value="url"/>' + \
+                        f'	<value value="https://directory.spineservices.nhs.uk/STU3/Organization/{config.ods_code}"/>' + \
+                        '	<use value="work"/>' + \
+                        '</contact>' + \
+                        '<reason value="To facilate GP2GP transfer of EHR for suspended patients from their previous practise"/>' + \
+                        f'<criteria value="/Bundle?type=message&amp;subscriptionRuleType=HSS&amp;Organization.identifier={config.ods_code}&amp;MessageHeader.event=pds-change-gp-1" />' + \
+                        '<channel>' + \
+                        '	<type value="message"/>' + \
+                        f'	<endpoint value="{config.mesh_mailbox_id}"/>' + \
+                        '</channel>' + \
+                        '</Subscription>'
 
-token = generate_auth_token(asid, api_host, ods_code)
+    r = requests.post(
+        f"http://{config.api_host}/STU3/Subscription",
+        data=subscribe_payload,
+        headers={
+            'fromASID': config.asid,
+            'toASID': '111111111111',
+            'Authorization': token,
+            'InteractionID': 'urn:nhs:names:services:clinicals-sync:SubscriptionsApiPost'
+        })
 
-print('Requesting Create Subscription...')
-subscribe_payload = '<Subscription xmlns="http://hl7.org/fhir">' + \
-                    '<meta>' + \
-                    '	<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/EMS-Subscription-1"/>' + \
-                    '</meta>' + \
-                    '<status value="requested"/>' + \
-                    '<contact>' + \
-                    '	<system value="url"/>' + \
-                    f'	<value value="https://directory.spineservices.nhs.uk/STU3/Organization/{ods_code}"/>' + \
-                    '	<use value="work"/>' + \
-                    '</contact>' + \
-                    '<reason value="To facilate GP2GP transfer of EHR for suspended patients from their previous practise"/>' + \
-                    f'<criteria value="/Bundle?type=message&amp;subscriptionRuleType=HSS&amp;Organization.identifier={ods_code}&amp;MessageHeader.event=pds-change-gp-1" />' + \
-                    '<channel>' + \
-                    '	<type value="message"/>' + \
-                    f'	<endpoint value="{mesh_mailbox_id}"/>' + \
-                    '</channel>' + \
-                    '</Subscription>'
+    print('Requested', r.status_code, r.headers, r.content)
+    return r.status_code
 
-r = requests.post(
-    f"http://{api_host}/STU3/Subscription",
-    data=subscribe_payload,
-    headers={
-        'fromASID': asid,
-        'toASID': '111111111111',
-        'Authorization': token,
-        'InteractionID': 'urn:nhs:names:services:clinicals-sync:SubscriptionsApiPost'
-    })
-
-print('Requested', r.status_code, r.headers, r.content)
+if __name__ == "__main__":
+    create_subscription(read_subscribe_config_from_env())
