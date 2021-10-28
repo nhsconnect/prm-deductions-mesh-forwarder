@@ -8,7 +8,7 @@ pipelines:
         type: configrepo
         whitelist:
           - nems-subscriber/**/*.*
-          - gocd/nems-subscriber.yml
+          - gocd/nems-subscriber.gocd.yml
     stages:
       - test:
           clean_workspace: true
