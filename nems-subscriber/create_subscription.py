@@ -4,8 +4,9 @@ from config import read_subscribe_config_from_env
 
 from generate_auth_token import generate_auth_token
 
+
 def create_subscription(config):
-    token = generate_auth_token(config.asid, config.api_host, config.ods_code)
+    token = generate_auth_token(config.asid, config.nems_url, config.ods_code)
 
     print('Requesting Create Subscription...')
     subscribe_payload = '<Subscription xmlns="http://hl7.org/fhir">' + \
@@ -27,7 +28,7 @@ def create_subscription(config):
                         '</Subscription>'
 
     r = requests.post(
-        f"http://{config.api_host}/STU3/Subscription",
+        f"{config.nems_url}/STU3/Subscription",
         data=subscribe_payload,
         headers={
             'fromASID': config.asid,
@@ -38,6 +39,7 @@ def create_subscription(config):
 
     print('Requested', r.status_code, r.headers, r.content)
     return r.status_code
+
 
 if __name__ == "__main__":
     create_subscription(read_subscribe_config_from_env())

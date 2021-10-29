@@ -1,14 +1,12 @@
-from config import read_subscribe_config_from_env, Config
+from config import Config
 
-from create_subscription import create_subscription
-from read_subscription import read_subscription
 
-def ensure_subscription_exists(subscription_reader, subscription_creator, config: Config):
+def create_subscription_if_not_exists(subscription_reader, subscription_creator, config: Config):
+    if not config.nems_subscription_id:
+        return subscription_creator(config)
+
     read_result = subscription_reader(config)
     if not read_result == 200:
         return subscription_creator(config)
 
-    return read_result
-
-def ensure_subscribed(config=read_subscribe_config_from_env()):
-    return ensure_subscription_exists(subscription_creator=create_subscription, subscription_reader=read_subscription, config=config)
+    return config.nems_subscription_id
