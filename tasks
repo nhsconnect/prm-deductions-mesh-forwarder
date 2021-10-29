@@ -53,6 +53,16 @@ function get_authorisation() {
   export MAIL_BOX_PASS=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-password")
 }
 
+function get_subscriptions_env() {
+      check_env
+      export OUR_ASID=$(_get_aws_ssm_secret "/repo/dev/user-input/external/nems-subscription-asid")
+      export OUR_ODS_CODE=$(_get_aws_ssm_secret "/repo/dev/user-input/external/nems-subscription-ods-code")
+      export NEMS_URL=$(_get_aws_ssm_secret "/repo/dev/user-input/external/nems-subscription-url")
+      export MESH_MAILBOX_ID=$(_get_aws_ssm_secret "/repo/dev/user-input/external/mesh-mailbox-id")
+      export NEMS_SUBSCRIPTION_ID=$(_get_aws_ssm_secret "/repo/dev/user-input/external/nems-subscription-id")
+
+}
+
 function get_aws_account_id() {
   AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
 }
@@ -176,14 +186,26 @@ case "${command}" in
     check_env
     dojo -c Dojofile-infra "./tasks _get_authorisation_token"
     ;;
+  _create_nems_subscription_if_not_exists)
+    get_subscriptions_env
+    pushd nems-subscriber && pip3 install -r requirements.txt
+    NEW_NEMS_SUBSCRIPTION_ID=$(python entrypoint.py | tail -n 1)
+    echo new subscribed id $NEW_NEMS_SUBSCRIPTION_ID
+    ;;
+  create_nems_subscription_if_not_exists)
+    dojo -c Dojofile-python "./tasks _create_nems_subscription_if_not_exists"
+    ;;
   _create_nems_subscription)
     pushd nems-subscriber && pip3 install -r requirements.txt && python3 create_subscription.py
     ;;
   create_nems_subscription)
     dojo -c Dojofile-python "./tasks _create_nems_subscription"
     ;;
+  _test_nems_subscriber)
+    pushd nems-subscriber && pip3 install -r requirements.txt && python -m pytest
+    ;;
   test_nems_subscriber)
-    pushd nems-subscriber && ./test.sh
+    dojo -c Dojofile-python "./tasks _test_nems_subscriber"
     ;;
   _read_nems_subscription)
     pushd nems-subscriber && pip3 install -r requirements.txt && python3 read_subscription.py
