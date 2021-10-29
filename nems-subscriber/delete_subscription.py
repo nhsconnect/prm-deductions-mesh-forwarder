@@ -14,7 +14,7 @@ def delete_subscription(config):
             'fromASID': config.asid,
             'toASID': '111111111111',
             'Authorization': token,
-            'InteractionID': 'urn:nhs:names:services:clinicals-sync:SubscriptionsApiGet'
+            'InteractionID': 'urn:nhs:names:services:clinicals-sync:SubscriptionsApiDelete'
         })
 
     print('Requested', r.status_code, r.headers, r.content)

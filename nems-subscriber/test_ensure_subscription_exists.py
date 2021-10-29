@@ -7,24 +7,24 @@ from config import Config
 def test_that_when_subscription_does_not_exist_it_is_created():
     config = Config(asid="A1", ods_code="ods", nems_url="http://host:8080", mesh_mailbox_id="mesh", nems_subscription_id="sub")
     reader = Mock(return_value=404)
-    creator = Mock(return_value=201)
+    creator = Mock(return_value='new_sub_id')
 
     result = create_subscription_if_not_exists(reader, creator, config)
 
     creator.assert_called_once_with(config)
-    assert result == 201
+    assert result == 'new_sub_id'
 
 
 def test_that_when_no_subscription_id_present_it_is_created():
     config = Config(asid="A1", ods_code="ods", nems_url="http://host:8080", mesh_mailbox_id="mesh")
     reader = Mock()
-    creator = Mock(return_value=201)
+    creator = Mock(return_value='new_sub_id')
 
     result = create_subscription_if_not_exists(reader, creator, config)
 
     reader.assert_not_called()
     creator.assert_called_once_with(config)
-    assert result == 201
+    assert result == 'new_sub_id'
 
 
 def test_that_when_subscription_does_exist_it_is_not_recreated():
@@ -36,7 +36,7 @@ def test_that_when_subscription_does_exist_it_is_not_recreated():
     result = create_subscription_if_not_exists(reader, creator, config)
 
     creator.assert_not_called()
-    assert result == 200
+    assert result == config.nems_subscription_id
 
 
 

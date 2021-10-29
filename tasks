@@ -55,12 +55,20 @@ function get_authorisation() {
 
 function get_subscriptions_env() {
       check_env
-      export OUR_ASID=$(_get_aws_ssm_secret "/repo/dev/user-input/external/nems-subscription-asid")
-      export OUR_ODS_CODE=$(_get_aws_ssm_secret "/repo/dev/user-input/external/nems-subscription-ods-code")
-      export NEMS_URL=$(_get_aws_ssm_secret "/repo/dev/user-input/external/nems-subscription-url")
-      export MESH_MAILBOX_ID=$(_get_aws_ssm_secret "/repo/dev/user-input/external/mesh-mailbox-id")
-      export NEMS_SUBSCRIPTION_ID=$(_get_aws_ssm_secret "/repo/dev/user-input/external/nems-subscription-id")
+      export OUR_ASID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-asid")
+      export OUR_ODS_CODE=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-ods-code")
+      export NEMS_URL=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-url")
+      export MESH_MAILBOX_ID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-id")
+      export NEMS_SUBSCRIPTION_ID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-id")
 
+}
+
+function get_local_tkw_subscriptions_env() {
+      export OUR_ASID='918999198820'
+      export OUR_ODS_CODE='A91720'
+      export NEMS_URL='http://192.168.128.14:8080'
+      export MESH_MAILBOX_ID='A91720OT001'
+      export NEMS_SUBSCRIPTION_ID='00000000000000000000000000000000'
 }
 
 function get_aws_account_id() {
@@ -142,6 +150,25 @@ function push_registrations_forwarder_image_to_repo_ecr() {
   docker push "$IMAGE_FULL_URL"
 }
 
+function create_nems_subscription_if_not_exists() {
+  pushd nems-subscriber && pip3 install -r requirements.txt
+  python entrypoint.py
+  NEW_NEMS_SUBSCRIPTION_ID=$(python entrypoint.py ... | tail -n 1)
+  echo new nems subscription id $NEW_NEMS_SUBSCRIPTION_ID
+
+  if [ $NEW_NEMS_SUBSCRIPTION_ID != $NEMS_SUBSCRIPTION_ID ]; then
+    echo creating new nems subscription id
+    aws ssm put-parameter \
+     --region $AWS_DEFAULT_REGION \
+     --name "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-id" \
+     --type String \
+     --overwrite \
+     --value $NEW_NEMS_SUBSCRIPTION_ID
+  else
+    echo not updating nems subscription id because id is the same current subscription id
+  fi
+}
+
 ###########
 ## TASKS ##
 ###########
@@ -188,20 +215,13 @@ case "${command}" in
     ;;
   _create_nems_subscription_if_not_exists)
     get_subscriptions_env
-    pushd nems-subscriber && pip3 install -r requirements.txt
-    NEW_NEMS_SUBSCRIPTION_ID=$(python entrypoint.py | tail -n 1)
-    echo new subscribed id $NEW_NEMS_SUBSCRIPTION_ID
+    create_nems_subscription_if_not_exists
     ;;
   create_nems_subscription_if_not_exists)
     dojo -c Dojofile-python "./tasks _create_nems_subscription_if_not_exists"
     ;;
-  _create_nems_subscription)
-    pushd nems-subscriber && pip3 install -r requirements.txt && python3 create_subscription.py
-    ;;
-  create_nems_subscription)
-    dojo -c Dojofile-python "./tasks _create_nems_subscription"
-    ;;
   _test_nems_subscriber)
+    get_local_tkw_subscriptions_env
     pushd nems-subscriber && pip3 install -r requirements.txt && python -m pytest
     ;;
   test_nems_subscriber)

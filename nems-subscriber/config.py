@@ -15,7 +15,7 @@ class Config:
 
 def _read_env_var(name, required=True):
     value = os.getenv(name)
-    if required and value is None:
+    if (required and value is None) or (required and value is ''):
         raise EnvironmentError(f'Required environment variable parameter {name} is missing')
     return value
 

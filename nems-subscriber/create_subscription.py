@@ -3,6 +3,7 @@ import requests
 from config import read_subscribe_config_from_env
 
 from generate_auth_token import generate_auth_token
+from extract_subscription_id import extract_subscription_id_from_headers
 
 
 def create_subscription(config):
@@ -38,7 +39,11 @@ def create_subscription(config):
         })
 
     print('Requested', r.status_code, r.headers, r.content)
-    return r.status_code
+
+    if r.status_code == 201:
+        return extract_subscription_id_from_headers(r.headers)
+    else:
+        raise Exception(f"Error creating subscription: Status Code {r.status_code}. Error {r.content.decode()}")
 
 
 if __name__ == "__main__":

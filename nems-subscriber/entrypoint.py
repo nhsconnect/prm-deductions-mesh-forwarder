@@ -1,3 +1,4 @@
+import os
 
 from config import read_subscribe_config_from_env
 
@@ -14,4 +15,4 @@ def ensure_subscribed(config=read_subscribe_config_from_env()):
 
 
 if __name__ == "__main__":
-    ensure_subscribed()
+    s_id = ensure_subscribed()

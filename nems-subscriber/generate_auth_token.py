@@ -24,5 +24,5 @@ def generate_auth_token(asid, nems_url, ods_code):
         algorithm=None
     )
 
-    print(token)
+    print('Created new auth token')
     return token

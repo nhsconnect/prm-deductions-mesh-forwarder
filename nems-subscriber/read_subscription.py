@@ -6,7 +6,6 @@ from generate_auth_token import generate_auth_token
 
 def read_subscription(config):
     token = generate_auth_token(config.asid, config.nems_url, config.ods_code)
-    print(token)
 
     print('Requesting Retrieve Subscription...')
 
