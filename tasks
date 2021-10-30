@@ -150,25 +150,6 @@ function push_registrations_forwarder_image_to_repo_ecr() {
   docker push "$IMAGE_FULL_URL"
 }
 
-function create_nems_subscription_if_not_exists() {
-  pushd nems-subscriber && pip3 install -r requirements.txt
-  python entrypoint.py
-  NEW_NEMS_SUBSCRIPTION_ID=$(python entrypoint.py ... | tail -n 1)
-  echo new nems subscription id $NEW_NEMS_SUBSCRIPTION_ID
-
-  if [ $NEW_NEMS_SUBSCRIPTION_ID != $NEMS_SUBSCRIPTION_ID ]; then
-    echo creating new nems subscription id
-    aws ssm put-parameter \
-     --region $AWS_DEFAULT_REGION \
-     --name "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-id" \
-     --type String \
-     --overwrite \
-     --value $NEW_NEMS_SUBSCRIPTION_ID
-  else
-    echo not updating nems subscription id because id is the same current subscription id
-  fi
-}
-
 ###########
 ## TASKS ##
 ###########
@@ -213,12 +194,14 @@ case "${command}" in
     check_env
     dojo -c Dojofile-infra "./tasks _get_authorisation_token"
     ;;
-  _create_nems_subscription_if_not_exists)
+  _create_nems_subscription_and_update_ssm)
     get_subscriptions_env
-    create_nems_subscription_if_not_exists
+    pushd nems-subscriber && pip3 install -r requirements.txt
+    python create_subscription_and_update_ssm.py
+    echo Successfully processed subscription
     ;;
-  create_nems_subscription_if_not_exists)
-    dojo -c Dojofile-python "./tasks _create_nems_subscription_if_not_exists"
+  create_nems_subscription_and_update_ssm)
+    dojo -c Dojofile-python "./tasks _create_nems_subscription_and_update_ssm"
     ;;
   _test_nems_subscriber)
     get_local_tkw_subscriptions_env
@@ -226,6 +209,12 @@ case "${command}" in
     ;;
   test_nems_subscriber)
     dojo -c Dojofile-python "./tasks _test_nems_subscriber"
+    ;;
+  _create_nems_subscription)
+    pushd nems-subscriber && pip3 install -r requirements.txt && python3 create_subscription.py
+    ;;
+  create_nems_subscription)
+    dojo -c Dojofile-python "./tasks _create_nems_subscription"
     ;;
   _read_nems_subscription)
     pushd nems-subscriber && pip3 install -r requirements.txt && python3 read_subscription.py

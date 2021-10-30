@@ -1,10 +1,9 @@
-import os
-
+from ssm_client import send_to_ssm
 from config import read_subscribe_config_from_env
 
 from create_subscription import create_subscription
 from read_subscription import read_subscription
-from subscribe import create_subscription_if_not_exists
+from create_subscription_if_not_exists import create_subscription_if_not_exists
 
 
 def ensure_subscribed(config=read_subscribe_config_from_env()):
@@ -15,4 +14,6 @@ def ensure_subscribed(config=read_subscribe_config_from_env()):
 
 
 if __name__ == "__main__":
-    s_id = ensure_subscribed()
+    config = read_subscribe_config_from_env()
+    new_id = ensure_subscribed(config)
+    send_to_ssm(new_id, config.nems_subscription_id)

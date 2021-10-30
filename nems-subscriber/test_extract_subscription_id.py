@@ -1,6 +1,6 @@
 import pytest
 
-from extract_subscription_id import extract_subscription_id_from_headers
+from create_subscription import extract_subscription_id_from_headers
 
 
 def test_extracts_subscription_id_from_headers():

@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 
-from subscribe import create_subscription_if_not_exists
+from create_subscription_if_not_exists import create_subscription_if_not_exists
 from config import Config
 
 

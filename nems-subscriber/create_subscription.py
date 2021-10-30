@@ -3,7 +3,6 @@ import requests
 from config import read_subscribe_config_from_env
 
 from generate_auth_token import generate_auth_token
-from extract_subscription_id import extract_subscription_id_from_headers
 
 
 def create_subscription(config):
@@ -44,6 +43,14 @@ def create_subscription(config):
         return extract_subscription_id_from_headers(r.headers)
     else:
         raise Exception(f"Error creating subscription: Status Code {r.status_code}. Error {r.content.decode()}")
+
+
+def extract_subscription_id_from_headers(headers):
+    if 'Location' in headers:
+        location = headers['Location']
+        return location.split('STU3/Subscription/')[1]
+    else:
+        raise Exception('Unable to extract location from message headers')
 
 
 if __name__ == "__main__":
