@@ -27,15 +27,21 @@ def create_subscription(config):
                         '</channel>' + \
                         '</Subscription>'
 
+    print('create payload', subscribe_payload)
+    headers={
+        'fromASID': config.asid,
+        'toASID': '111111111111',
+        'Authorization': token,
+        'InteractionID': 'urn:nhs:names:services:clinicals-sync:SubscriptionsApiPost'
+    }
+    print('create headers', headers)
+    url = f"{config.nems_url}/STU3/Subscription"
+    print('create url', url)
+
     r = requests.post(
-        f"{config.nems_url}/STU3/Subscription",
+        url,
         data=subscribe_payload,
-        headers={
-            'fromASID': config.asid,
-            'toASID': '111111111111',
-            'Authorization': token,
-            'InteractionID': 'urn:nhs:names:services:clinicals-sync:SubscriptionsApiPost'
-        })
+        headers=headers)
 
     print('Requested', r.status_code, r.headers, r.content)
 
