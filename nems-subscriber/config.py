@@ -11,6 +11,7 @@ class Config:
     nems_url: str
     mesh_mailbox_id: str
     nems_subscription_id: Optional[str] = None
+    nems_event_code: Optional[str] = 'pds-change-gp-1'
 
 
 def _read_env_var(name, required=True):
@@ -26,4 +27,5 @@ def read_subscribe_config_from_env():
         ods_code = _read_env_var('OUR_ODS_CODE'),
         nems_url = _read_env_var('NEMS_URL'),
         mesh_mailbox_id = _read_env_var('MESH_MAILBOX_ID', required=False),
+        nems_event_code = _read_env_var('NEMS_EVENT_CODE', required=False),
         nems_subscription_id = _read_env_var('NEMS_SUBSCRIPTION_ID', required=False))
