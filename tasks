@@ -71,6 +71,15 @@ function get_local_tkw_subscriptions_env() {
       export NEMS_SUBSCRIPTION_ID='00000000000000000000000000000000'
 }
 
+function set_nems_env() {
+    if [[ -z "${NHS_ENVIRONMENT}" ]]; then
+     get_local_tkw_subscriptions_env
+    else
+     get_subscriptions_env
+    fi
+    pushd nems-subscriber && pip3 install -r requirements.txt
+}
+
 function get_aws_account_id() {
   AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
 }
@@ -195,8 +204,7 @@ case "${command}" in
     dojo -c Dojofile-infra "./tasks _get_authorisation_token"
     ;;
   _create_nems_subscription_and_update_ssm)
-    get_subscriptions_env
-    pushd nems-subscriber && pip3 install -r requirements.txt
+    set_nems_env
     python create_subscription_and_update_ssm.py
     echo Successfully processed subscription
     ;;
@@ -211,19 +219,22 @@ case "${command}" in
     dojo -c Dojofile-python "./tasks _test_nems_subscriber"
     ;;
   _create_nems_subscription)
-    pushd nems-subscriber && pip3 install -r requirements.txt && python3 create_subscription.py
+    set_nems_env
+    python3 create_subscription.py
     ;;
   create_nems_subscription)
     dojo -c Dojofile-python "./tasks _create_nems_subscription"
     ;;
   _read_nems_subscription)
-    pushd nems-subscriber && pip3 install -r requirements.txt && python3 read_subscription.py
+    set_nems_env
+    python3 read_subscription.py
     ;;
   read_nems_subscription)
     dojo -c Dojofile-python "./tasks _read_nems_subscription"
     ;;
   _delete_nems_subscription)
-    pushd nems-subscriber && pip3 install -r requirements.txt && python3 delete_subscription.py
+    set_nems_env
+    python3 delete_subscription.py
     ;;
   delete_nems_subscription)
     dojo -c Dojofile-python "./tasks _delete_nems_subscription"

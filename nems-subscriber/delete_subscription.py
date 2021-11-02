@@ -11,9 +11,10 @@ def delete_subscription(config):
     r = requests.delete(
         f"{config.nems_url}/STU3/Subscription/{config.nems_subscription_id}",
         headers={
+            'Accept': 'application/fhir+xml;charset=utf-8',
             'fromASID': config.asid,
             'toASID': '111111111111',
-            'Authorization': token,
+            'Authorization': f'Bearer {token}',
             'InteractionID': 'urn:nhs:names:services:clinicals-sync:SubscriptionsApiDelete'
         })
 
