@@ -19,6 +19,7 @@ def delete_subscription(config):
         })
 
     print('Requested', r.status_code, r.headers, r.content)
+    return r
 
 
 if __name__ == "__main__":

@@ -80,6 +80,13 @@ function set_nems_env() {
     pushd nems-subscriber && pip3 install -r requirements.txt
 }
 
+function setup_venv {
+  venv_directory=venv
+  echo "Using this directory for venv: ${venv_directory}"
+  python3 -m venv "${venv_directory}"
+  source "${venv_directory}"/bin/activate
+}
+
 function get_aws_account_id() {
   AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
 }
@@ -197,7 +204,7 @@ case "${command}" in
   _get_authorisation_token)
     _assume_environment_role $NHS_ENVIRONMENT
     get_authorisation
-    python auth-creation.py $SHARED_SECRET $MAIL_BOX_ID $MAIL_BOX_PASS
+    python3 auth-creation.py $SHARED_SECRET $MAIL_BOX_ID $MAIL_BOX_PASS
     ;;
   get_authorisation_token)
     check_env
@@ -205,7 +212,7 @@ case "${command}" in
     ;;
   _create_nems_subscription_and_update_ssm)
     set_nems_env
-    python create_subscription_and_update_ssm.py
+    python3 create_subscription_and_update_ssm.py
     echo Successfully processed subscription
     ;;
   create_nems_subscription_and_update_ssm)
@@ -213,7 +220,7 @@ case "${command}" in
     ;;
   _test_nems_subscriber)
     get_local_tkw_subscriptions_env
-    pushd nems-subscriber && pip3 install -r requirements.txt && python -m pytest --capture=no
+    pushd nems-subscriber && pip3 install -r requirements.txt && python3 -m pytest --capture=no
     ;;
   test_nems_subscriber)
     dojo -c Dojofile-python "./tasks _test_nems_subscriber"
@@ -242,6 +249,9 @@ case "${command}" in
   promote_docker_image)
     check_env
     promote_docker_image "$IMAGE_REPO_NAME:$IMAGE_TAG" "$NHS_ENVIRONMENT"
+    ;;
+  _venv)
+    setup_venv
     ;;
   _wait_ecs)
     _assume_environment_role $NHS_ENVIRONMENT
