@@ -1,5 +1,6 @@
 # prm-deductions-mesh-forwarder
-A service to deploy MESH forwarder infrastructure in scope of deductions team. 
+A service to deploy MESH forwarder infrastructure in scope of repository team continuity service.
+
 MESH forwarder is responsible reading messages from a MESH inbox and passing them onto the downstream components for further processing
 
 ## Prerequisites
