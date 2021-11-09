@@ -1,7 +1,7 @@
 environment    = "dev"
 
 service_desired_count = "1"
-
+cloudwatch_alarm_evaluation_periods = 5
 poll_frequency = "10"
 
 task_cpu    = 256

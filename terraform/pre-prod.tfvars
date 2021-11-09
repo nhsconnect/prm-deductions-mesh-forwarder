@@ -1,7 +1,7 @@
 environment    = "pre-prod"
 
 service_desired_count = "1"
-
+cloudwatch_alarm_evaluation_periods = 30
 log_level = "info"
 
 poll_frequency = "60"

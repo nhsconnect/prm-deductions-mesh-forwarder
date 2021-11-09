@@ -69,3 +69,5 @@ variable "mesh_ca_cert_ssm_param_name" {
 }
 
 variable "message_destination" {}
+
+variable "cloudwatch_alarm_evaluation_periods" {}
