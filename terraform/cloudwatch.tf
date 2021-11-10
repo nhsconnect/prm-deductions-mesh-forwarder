@@ -1,5 +1,5 @@
 locals {
-  inbox_message_count_metric_name    = "MeshInboxMessageCount"
+  inbox_message_count_metric_name = "MeshInboxMessageCount"
   mesh_forwarder_metric_namespace = "MeshForwarder"
 }
 
@@ -8,7 +8,7 @@ resource "aws_cloudwatch_log_group" "log_group" {
 
   tags = {
     Environment = var.environment
-    CreatedBy= var.repo_name
+    CreatedBy   = var.repo_name
   }
 }
 
@@ -25,15 +25,14 @@ resource "aws_cloudwatch_log_metric_filter" "inbox_message_count" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "inbox-messages-not-consumed" {
-  alarm_name                = "inbox-messages-not-consumed"
-  comparison_operator       = "GreaterThanThreshold"
-  evaluation_periods        = var.cloudwatch_alarm_evaluation_periods
-  metric_name               = local.inbox_message_count_metric_name
-  namespace                 = local.mesh_forwarder_metric_namespace
-  period                    = "60"
-  statistic                 = "Minimum"
-  threshold                 = "0"
-  alarm_description         = "This alarm is triggered if the mailbox doesn't get empty in a given evaluation time period"
-  // TODO: understand how to handle missing metric
-  insufficient_data_actions = []
+  alarm_name          = "inbox-messages-not-consumed"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = var.cloudwatch_alarm_evaluation_periods
+  metric_name         = local.inbox_message_count_metric_name
+  namespace           = local.mesh_forwarder_metric_namespace
+  period              = "60"
+  statistic           = "Minimum"
+  threshold           = "0"
+  alarm_description   = "This alarm is triggered if the mailbox doesn't get empty in a given evaluation time period"
+  treat_missing_data  = "breaching"
 }
