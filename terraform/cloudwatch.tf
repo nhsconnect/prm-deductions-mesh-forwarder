@@ -21,9 +21,6 @@ resource "aws_cloudwatch_log_metric_filter" "inbox_message_count" {
     name      = local.inbox_message_count_metric_name
     namespace = local.mesh_forwarder_metric_namespace
     value     = "$.inboxMessageCount"
-    dimensions = {
-      "Environment" = var.environment
-    }
   }
 }
 
@@ -38,7 +35,4 @@ resource "aws_cloudwatch_metric_alarm" "inbox-messages-not-consumed" {
   threshold           = "0"
   alarm_description   = "This alarm is triggered if the mailbox doesn't get empty in a given evaluation time period"
   treat_missing_data  = "breaching"
-  dimensions = {
-    "Environment" = var.environment
-  }
 }
