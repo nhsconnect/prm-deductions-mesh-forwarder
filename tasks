@@ -166,6 +166,57 @@ function push_registrations_forwarder_image_to_repo_ecr() {
   docker push "$IMAGE_FULL_URL"
 }
 
+
+function generate_csr {
+  keys_file_name="$1"
+  # If you intend to secure the URL https://www.yourdomain.com, then your CSR’s common name must be www.yourdomain.com
+  common_name="$2"
+  fqdn=$common_name
+
+  if [[ -z "$keys_file_name" ]]; then
+    echo "Keys filename missing"
+    exit 1
+  fi
+  if [[ -z "$common_name" ]]; then
+    echo "domain name missing"
+    exit 1
+  fi
+
+  echo "Preparing certificates for: ${keys_file_name} on ${fqdn}, common_name: ${common_name}"
+  mkdir -p $CERTIFICATES_DIR
+
+  # 1. Create a config file for generating a Certificate Signing Request (CSR).
+  cat <<EOF >${CERTIFICATES_DIR}/csr.conf
+[ req ]
+default_bits = 2048
+prompt = no
+default_md = sha256
+req_extensions = req_ext
+distinguished_name = dn
+
+[ dn ]
+CN = ${common_name}
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = ${fqdn}
+
+[ v3_ext ]
+authorityKeyIdentifier=keyid,issuer:always
+basicConstraints=CA:FALSE
+keyUsage=keyEncipherment,dataEncipherment
+extendedKeyUsage=serverAuth,clientAuth
+subjectAltName=@alt_names
+EOF
+
+  # 2. Create a private key (${keys_file_name}.key) and then generate a certificate request (${keys_file_name}.csr) from it.
+  # https://www.openssl.org/docs/manmaster/man1/req.html
+  openssl genrsa -out ${keys_file_name}.key 2048
+  openssl req -new -key ${keys_file_name}.key -out ${keys_file_name}.csr -config ${CERTIFICATES_DIR}/csr.conf
+}
+
 ###########
 ## TASKS ##
 ###########
@@ -200,6 +251,17 @@ case "${command}" in
   tf_apply)
     check_env
     dojo -c Dojofile-infra "./tasks _tf_apply"
+    ;;
+  _csr)
+    check_env
+    if [ -z $ODS_CODE ]; then
+      echo "Please specify ODS_CODE"
+      exit 4
+    fi
+    fqdn="$ODS_CODE.nems.$NHS_ENVIRONMENT.non-prod.patient-deductions.nhs.uk"
+    generate_csr "$ODS_CODE-nems-$NHS_ENVIRONMENT" $fqdn
+    echo "The CSR has to be sent together with endpoint registration. Use the form below or ask endpoint admin to register it"
+    echo "https://digital.nhs.uk/forms/combined-endpoint-and-service-registration-request"
     ;;
   _get_authorisation_token)
     _assume_environment_role $NHS_ENVIRONMENT
