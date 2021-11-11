@@ -43,7 +43,7 @@ data "aws_iam_policy_document" "sns_sqs_kms_key_policy_doc" {
   }
 }
 
-resource "aws_sns_topic" "alarm-notifications" {
+resource "aws_sns_topic" "alarm_notifications" {
   name = "${var.environment}-prm-deductions-alarm-notifications-sns-topic"
   kms_master_key_id = aws_kms_key.sns_sqs_encryption.id
 
