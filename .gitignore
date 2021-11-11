@@ -60,3 +60,6 @@ coverage
 *.pem
 .vscode/
 /venv/
+
+# Python cache
+__pycache__/
