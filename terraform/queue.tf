@@ -43,6 +43,16 @@ data "aws_iam_policy_document" "sns_sqs_kms_key_policy_doc" {
   }
 }
 
+resource "aws_sns_topic" "alarm-notifications" {
+  name = "${var.environment}-prm-deductions-alarm-notifications-sns-topic"
+  kms_master_key_id = aws_kms_key.sns_sqs_encryption.id
+
+  tags = {
+    Name = "${var.environment}-prm-deductions-alarm-notifications-sns-topic"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
+}
 
 resource "aws_sns_topic" "nems_events" {
   name = "${var.environment}-${var.component_name}-nems-events-sns-topic"
