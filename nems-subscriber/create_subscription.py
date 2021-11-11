@@ -6,7 +6,7 @@ from generate_auth_token import generate_auth_token
 
 
 def create_subscription(config):
-    token = generate_auth_token(config.asid, config.nems_url, config.ods_code)
+    token = generate_auth_token(config.repo_asid, config.nems_url, config.ods_code)
 
     print('Requesting Create Subscription...')
     subscribe_payload = '<Subscription xmlns="http://hl7.org/fhir">' + \
@@ -30,19 +30,21 @@ def create_subscription(config):
     print('create payload', subscribe_payload)
     headers={
         'Accept': 'application/fhir+xml;charset=utf-8',
-        'fromASID': config.asid,
-        'toASID': '111111111111',
+        'fromASID': config.repo_asid,
+        'toASID': config.nems_asid,
         'Authorization': f'Bearer {token}',
-        'InteractionID': 'urn:nhs:names:services:clinicals-sync:SubscriptionsApiPost'
+        'InteractionID': 'urn:nhs:names:services:clinicals-sync:SubscriptionsApiPost',
     }
     print('create headers', headers)
-    url = f"{config.nems_url}/STU3/Subscription"
+    url = f"{config.nems_url}"
     print('create url', url)
 
     r = requests.post(
         url,
         data=subscribe_payload,
-        headers=headers)
+        headers=headers,
+        cert=(f"../certs/{config.nhs_env}/nems-client.crt", f"../certs/{config.nhs_env}/nems-client.key"),
+        verify=f"../certs/{config.nhs_env}/nems-ca-certs.crt")
 
     print('Requested', r.status_code, r.headers, r.content)
 

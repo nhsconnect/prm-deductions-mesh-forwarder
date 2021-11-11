@@ -54,30 +54,38 @@ function get_authorisation() {
 }
 
 function get_subscriptions_env() {
-      check_env
-      export OUR_ASID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-asid")
-      export OUR_ODS_CODE=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-ods-code")
-      export NEMS_URL=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-url")
-      export MESH_MAILBOX_ID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-id")
-      export NEMS_SUBSCRIPTION_ID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-id")
+  check_env
+  export OUR_ASID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/repository-asid")
+  export OUR_ODS_CODE=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/repository-ods-code")
+  export NEMS_URL=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-url")
+  export MESH_MAILBOX_ID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-id")
+  export NEMS_SUBSCRIPTION_ID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-id")
+  export NEMS_ASID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-asid")
+}
 
+function configure_certificates() {
+  mkdir -p certs/${NHS_ENVIRONMENT}
+  aws ssm get-parameter --with-decryption --region ${AWS_DEFAULT_REGION} --name  "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-tls-client-key" | jq -r .Parameter.Value > certs/${NHS_ENVIRONMENT}/nems-client.key
+  aws ssm get-parameter --with-decryption --region ${AWS_DEFAULT_REGION} --name  "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-tls-client-cert" | jq -r .Parameter.Value > certs/${NHS_ENVIRONMENT}/nems-client.crt
+  aws ssm get-parameter --with-decryption --region ${AWS_DEFAULT_REGION} --name  "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-tls-ca-certs" | jq -r .Parameter.Value > certs/${NHS_ENVIRONMENT}/nems-ca-certs.crt
 }
 
 function get_local_tkw_subscriptions_env() {
-      export OUR_ASID='918999198820'
-      export OUR_ODS_CODE='A91720'
-      export NEMS_URL='http://192.168.128.14:8080'
-      export MESH_MAILBOX_ID='A91720OT001'
-      export NEMS_SUBSCRIPTION_ID='00000000000000000000000000000000'
+  export OUR_ASID='918999198820'
+  export OUR_ODS_CODE='A91720'
+  export NEMS_URL='http://192.168.128.14:8080'
+  export MESH_MAILBOX_ID='A91720OT001'
+  export NEMS_SUBSCRIPTION_ID='00000000000000000000000000000000'
 }
 
 function set_nems_env() {
-    if [[ -z "${NHS_ENVIRONMENT}" ]]; then
+  if [[ -z "${NHS_ENVIRONMENT}" ]]; then
      get_local_tkw_subscriptions_env
-    else
+  else
      get_subscriptions_env
-    fi
-    pushd nems-subscriber && pip3 install -r requirements.txt
+     configure_certificates
+  fi
+  pushd nems-subscriber && pip3 install -r requirements.txt
 }
 
 function setup_venv {
