@@ -59,3 +59,20 @@ resource "aws_iam_role_policy_attachment" "webhook_ssm_access_attachment" {
   role       = aws_iam_role.alarm_notifications_lambda_role.name
   policy_arn = aws_iam_policy.webhook_ssm_access.arn
 }
+
+resource "aws_sns_topic_subscription" "alarm_notifications_lambda_subscription" {
+  topic_arn = aws_sns_topic.alarm_notifications.arn
+  protocol  = "lambda"
+  endpoint  = aws_lambda_function.alarm_notifications_lambda.arn
+}
+
+resource "aws_sns_topic" "alarm_notifications" {
+  name = "${var.environment}-prm-deductions-alarm-notifications-sns-topic"
+  kms_master_key_id = aws_kms_key.sns_sqs_encryption.id
+
+  tags = {
+    Name = "${var.environment}-prm-deductions-alarm-notifications-sns-topic"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
+}
