@@ -35,3 +35,17 @@ data "aws_iam_policy_document" "lambda_assume_role" {
     }
   }
 }
+
+data "aws_iam_policy_document" "webhook_ssm_access" {
+  statement {
+    sid = "GetSSMParameter"
+
+    actions = [
+      "ssm:GetParameter"
+    ]
+
+    resources = [
+      "arn:aws:ssm:${var.region}:${local.account_id}:parameter${var.alarm_webhook_url_ssm_param_name}"
+    ]
+  }
+}
