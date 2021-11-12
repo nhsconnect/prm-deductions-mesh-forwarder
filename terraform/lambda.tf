@@ -49,3 +49,13 @@ data "aws_iam_policy_document" "webhook_ssm_access" {
     ]
   }
 }
+
+resource "aws_iam_policy" "webhook_ssm_access" {
+  name   = "${var.environment}-webhook-ssm-access"
+  policy = data.aws_iam_policy_document.webhook_ssm_access.json
+}
+
+resource "aws_iam_role_policy_attachment" "webhook_ssm_access_attachment" {
+  role       = aws_iam_role.alarm_notifications_lambda_role.name
+  policy_arn = aws_iam_policy.webhook_ssm_access.arn
+}
