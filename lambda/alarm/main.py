@@ -19,7 +19,7 @@ def generate_markdown_message(alarm_name, message):
 def lambda_handler(event, context):
     ssm = boto3.client("ssm")
     secret_manager = SsmSecretManager(ssm)
-    alert_webhook_url = secret_manager.get_secret(os.environ["ALERT_WEBHOOK_URL_PARAM_NAME"])
+    alarm_webhook_url = secret_manager.get_secret(os.environ["ALARM_WEBHOOK_URL_PARAM_NAME"])
 
     sns_message = json.loads(event['Records'][0]['Sns']['Message'])
     markdown_message = generate_markdown_message(alarm_name=sns_message['AlarmName'], message=sns_message['AlarmDescription'])
@@ -29,7 +29,7 @@ def lambda_handler(event, context):
     }
 
     encoded_msg = json.dumps(msg).encode('utf-8')
-    resp = http.request('POST', url=alert_webhook_url, body=encoded_msg)
+    resp = http.request('POST', url=alarm_webhook_url, body=encoded_msg)
 
     print({
         "message": msg["text"],

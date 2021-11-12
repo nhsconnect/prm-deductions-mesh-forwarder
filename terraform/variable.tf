@@ -71,3 +71,15 @@ variable "mesh_ca_cert_ssm_param_name" {
 variable "message_destination" {}
 
 variable "cloudwatch_alarm_evaluation_periods" {}
+
+variable "alarm_lambda_zip" {
+  type        = string
+  description = "path to zipfile containing lambda code to dispatch alarm notifications to MS Teams"
+  default     = "../lambda/build/alarm.zip"
+}
+
+variable "alarm_webhook_url_ssm_param_name" {
+  type        = string
+  description = "Name of SSM parameter containing alarm notifications webhook URL"
+  default     = "/repo/user-input/external/alarm-notifications-webhook-url"
+}
