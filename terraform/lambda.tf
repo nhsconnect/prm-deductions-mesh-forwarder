@@ -60,6 +60,14 @@ resource "aws_iam_role_policy_attachment" "webhook_ssm_access_attachment" {
   policy_arn = aws_iam_policy.webhook_ssm_access.arn
 }
 
+resource "aws_lambda_permission" "allow_invocation_from_sns" {
+  statement_id  = "AllowExecutionFromSNS"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.alarm_notifications_lambda.function_name
+  principal     = "sns.amazonaws.com"
+  source_arn    = aws_sns_topic.alarm_notifications.arn
+}
+
 resource "aws_sns_topic_subscription" "alarm_notifications_lambda_subscription" {
   topic_arn = aws_sns_topic.alarm_notifications.arn
   protocol  = "lambda"
