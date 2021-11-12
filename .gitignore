@@ -65,4 +65,7 @@ coverage
 __pycache__/
 
 # certs
-certs/
+certs/dev
+certs/test
+certs/pre-prod
+certs/prod

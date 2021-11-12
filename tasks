@@ -73,9 +73,11 @@ function configure_certificates() {
 function get_local_tkw_subscriptions_env() {
   export OUR_ASID='918999198820'
   export OUR_ODS_CODE='A91720'
-  export NEMS_URL='http://192.168.128.14:8080'
+  export NEMS_URL='http://192.168.128.14:8080/STU3/Subscription'
   export MESH_MAILBOX_ID='A91720OT001'
   export NEMS_SUBSCRIPTION_ID='00000000000000000000000000000000'
+  export NHS_ENVIRONMENT=tkw
+  export NEMS_ASID='111111111111'
 }
 
 function set_nems_env() {

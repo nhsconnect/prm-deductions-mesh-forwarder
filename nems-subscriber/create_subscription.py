@@ -2,13 +2,12 @@ import requests
 
 from config import read_subscribe_config_from_env
 
-from generate_auth_token import generate_auth_token
+from create_headers import create_headers
 
 
 def create_subscription(config):
-    token = generate_auth_token(config.repo_asid, config.nems_url, config.ods_code)
-
     print('Requesting Create Subscription...')
+
     subscribe_payload = '<Subscription xmlns="http://hl7.org/fhir">' + \
                         '<meta>' + \
                         '	<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/EMS-Subscription-1"/>' + \
@@ -20,7 +19,8 @@ def create_subscription(config):
                         '	<use value="work"/>' + \
                         '</contact>' + \
                         '<reason value="To facilate GP2GP transfer of EHR for suspended patients from their previous practise"/>' + \
-                        f'<criteria value="/Bundle?type=message&amp;MessageHeader.event=pds-change-of-gp-1&amp;subscriptionRuleType=HSS&amp;Organization.identifier={config.ods_code}" />' + \
+                        f'<criteria value="/Bundle?type=message&amp;MessageHeader.event=pds-change-of-gp-1&amp;serviceType=GP' \
+                        f'&amp;subscriptionRuleType=HSS&amp;Organization.identifier={config.ods_code}" />' + \
                         '<channel>' + \
                         '	<type value="message"/>' + \
                         f'	<endpoint value="{config.mesh_mailbox_id}"/>' + \
@@ -28,23 +28,14 @@ def create_subscription(config):
                         '</Subscription>'
 
     print('create payload', subscribe_payload)
-    headers={
-        'Accept': 'application/fhir+xml;charset=utf-8',
-        'fromASID': config.repo_asid,
-        'toASID': config.nems_asid,
-        'Authorization': f'Bearer {token}',
-        'InteractionID': 'urn:nhs:names:services:clinicals-sync:SubscriptionsApiPost',
-    }
-    print('create headers', headers)
-    url = f"{config.nems_url}"
-    print('create url', url)
 
     r = requests.post(
-        url,
+        config.nems_url,
         data=subscribe_payload,
-        headers=headers,
+        headers=create_headers(config, 'Post'),
         cert=(f"../certs/{config.nhs_env}/nems-client.crt", f"../certs/{config.nhs_env}/nems-client.key"),
-        verify=f"../certs/{config.nhs_env}/nems-ca-certs.crt")
+        verify=f"../certs/{config.nhs_env}/nems-ca-certs.crt"
+    )
 
     print('Requested', r.status_code, r.headers, r.content)
 
