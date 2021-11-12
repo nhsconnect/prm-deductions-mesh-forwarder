@@ -61,6 +61,7 @@ function get_subscriptions_env() {
   export NEMS_URL=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-url")
   export MESH_MAILBOX_ID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-id")
   export NEMS_SUBSCRIPTION_ID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-id")
+  set_env_url_suffix
 }
 
 function configure_certificates() {
@@ -78,6 +79,7 @@ function get_local_tkw_subscriptions_env() {
   export MESH_MAILBOX_ID='A91720OT001'
   export NEMS_SUBSCRIPTION_ID='00000000000000000000000000000000'
   export NHS_ENVIRONMENT=tkw
+  set_env_url_suffix
 }
 
 function set_nems_env() {
@@ -88,6 +90,14 @@ function set_nems_env() {
      configure_certificates
   fi
   pushd nems-subscriber && pip3 install -r requirements.txt
+}
+
+function set_env_url_suffix() {
+  if [[ "${NHS_ENVIRONMENT}" == prod ]]; then
+    export ENV_URL_SUFFIX=${NHS_ENVIRONMENT}
+  else
+    export ENV_URL_SUFFIX=${NHS_ENVIRONMENT}.non-prod
+  fi
 }
 
 function setup_venv {

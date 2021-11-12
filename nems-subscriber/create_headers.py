@@ -18,9 +18,8 @@ def create_headers(config, method):
 def generate_auth_token(config):
     now = int(time.time())
     five_minutes_from_now = now + 300
-
     jwt_payload_data = {
-        'iss': f'{config.ods_code}.nems.{config.nhs_env}.non-prod.patient-deductions.nhs.uk',
+        'iss': f'{config.ods_code}.nems.{config.env_url_suffix}.patient-deductions.nhs.uk',
         'sub': f'https://fhir.nhs.uk/Id/accredited-system|{config.repo_asid}',
         'aud': config.nems_url,
         'exp': five_minutes_from_now,
