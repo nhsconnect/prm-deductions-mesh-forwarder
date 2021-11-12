@@ -2,7 +2,7 @@
 
 resource "aws_lambda_function" "alarm_notifications_lambda" {
   filename      = var.alarm_lambda_zip
-  function_name = "${var.environment}-alarm_notifications_lambda"
+  function_name = "${var.environment}-alarm-notifications-lambda"
   role          = aws_iam_role.alarm_notifications_lambda_role.arn
   handler       = "main.lambda_handler"
   tags = {
@@ -22,7 +22,7 @@ resource "aws_lambda_function" "alarm_notifications_lambda" {
 }
 
 resource "aws_iam_role" "alarm_notifications_lambda_role" {
-  name               = "${var.environment}-alarm_notifications_lambda_role"
+  name               = "${var.environment}-alarm-notifications-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
