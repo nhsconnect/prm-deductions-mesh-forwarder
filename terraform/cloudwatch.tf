@@ -25,7 +25,7 @@ resource "aws_cloudwatch_log_metric_filter" "inbox_message_count" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "inbox-messages-not-consumed" {
-  alarm_name          = "inbox-messages-not-consumed"
+  alarm_name          = "${var.environment}-mesh-inbox-messages-not-consumed"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = var.cloudwatch_alarm_evaluation_periods
   metric_name         = local.inbox_message_count_metric_name
@@ -33,7 +33,7 @@ resource "aws_cloudwatch_metric_alarm" "inbox-messages-not-consumed" {
   period              = "60"
   statistic           = "Minimum"
   threshold           = "0"
-  alarm_description   = "This alarm is triggered if the mailbox doesn't get empty in a given evaluation time period"
+  alarm_description   = "Environment: ${var.environment}; there are messages that can't be forwarded from MESH mailbox"
   treat_missing_data  = "breaching"
   actions_enabled     = "true"
   alarm_actions       = [aws_sns_topic.alarm_notifications.arn]
