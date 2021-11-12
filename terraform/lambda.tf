@@ -76,6 +76,7 @@ resource "aws_sns_topic_subscription" "alarm_notifications_lambda_subscription" 
 
 resource "aws_sns_topic" "alarm_notifications" {
   name = "${var.environment}-prm-deductions-alarm-notifications-sns-topic"
+  kms_master_key_id = aws_kms_key.sns_sqs_encryption.id
 
   tags = {
     Name = "${var.environment}-prm-deductions-alarm-notifications-sns-topic"
