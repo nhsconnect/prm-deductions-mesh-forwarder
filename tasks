@@ -47,7 +47,7 @@ function set_image_tag() {
 }
 
 function _acknowledge_mesh_mailbox_message() {
-  mkdir -p "certs"
+  get_mesh_mailbox_certificates
   get_authorisation
   authorization_token=$1
   message_id=$2
@@ -62,15 +62,15 @@ function _acknowledge_mesh_mailbox_message() {
   fi
 
   curl -k --request "PUT" \
-    --cacert "certs/cacert.pem" \
-    --key "certs/key.pem" \
-    --cert "certs/cert.pem" \
+    --cacert "certs/${NHS_ENVIRONMENT}/mesh-mailbox-ca-cert.pem" \
+    --key "certs/${NHS_ENVIRONMENT}/mesh-mailbox-key.pem" \
+    --cert "certs/${NHS_ENVIRONMENT}/mesh-mailbox-cert.pem" \
     --header "Authorization: $authorization_token" \
     "https://msg.intspineservices.nhs.uk/messageexchange/${MAIL_BOX_ID}/inbox/${message_id}/status/acknowledged"
 }
 
 function _get_mesh_mailbox_messages() {
-  mkdir -p "certs"
+  get_mesh_mailbox_certificates
   get_authorisation
   authorization_token=$1
 
@@ -80,9 +80,9 @@ function _get_mesh_mailbox_messages() {
   fi
 
   curl -k --request "GET" \
-    --cacert "certs/cacert.pem" \
-    --key "certs/key.pem" \
-    --cert "certs/cert.pem" \
+    --cacert "certs/${NHS_ENVIRONMENT}/mesh-mailbox-ca-cert.pem" \
+    --key "certs/${NHS_ENVIRONMENT}/mesh-mailbox-key.pem" \
+    --cert "certs/${NHS_ENVIRONMENT}/mesh-mailbox-cert.pem" \
     --header "Authorization: $authorization_token" \
     "https://msg.intspineservices.nhs.uk/messageexchange/${MAIL_BOX_ID}/inbox"
 }
@@ -111,11 +111,19 @@ function get_subscriptions_env() {
   set_env_url_suffix
 }
 
-function configure_certificates() {
+function get_nems_certificates() {
   mkdir -p certs/${NHS_ENVIRONMENT}
   aws ssm get-parameter --with-decryption --region ${AWS_DEFAULT_REGION} --name  "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-tls-client-key" | jq -r .Parameter.Value > certs/${NHS_ENVIRONMENT}/nems-client.key
   aws ssm get-parameter --with-decryption --region ${AWS_DEFAULT_REGION} --name  "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-tls-client-cert" | jq -r .Parameter.Value > certs/${NHS_ENVIRONMENT}/nems-client.crt
   aws ssm get-parameter --with-decryption --region ${AWS_DEFAULT_REGION} --name  "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-tls-ca-certs" | jq -r .Parameter.Value > certs/${NHS_ENVIRONMENT}/nems-ca-certs.crt
+}
+
+function get_mesh_mailbox_certificates() {
+  mkdir -p certs/${NHS_ENVIRONMENT}
+
+  aws ssm get-parameter --with-decryption --region ${AWS_DEFAULT_REGION} --name  "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-ca-cert" | jq -r .Parameter.Value > certs/${NHS_ENVIRONMENT}/mesh-mailbox-ca-cert.pem
+  aws ssm get-parameter --with-decryption --region ${AWS_DEFAULT_REGION} --name  "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-client-key" | jq -r .Parameter.Value > certs/${NHS_ENVIRONMENT}/mesh-mailbox-key.pem
+  aws ssm get-parameter --with-decryption --region ${AWS_DEFAULT_REGION} --name  "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-client-cert" | jq -r .Parameter.Value > certs/${NHS_ENVIRONMENT}/mesh-mailbox-cert.pem
 }
 
 function get_local_tkw_subscriptions_env() {
@@ -134,7 +142,7 @@ function set_nems_env() {
      get_local_tkw_subscriptions_env
   else
      get_subscriptions_env
-     configure_certificates
+     get_nems_certificates
   fi
   pushd nems-subscriber && pip3 install -r requirements.txt
 }
@@ -358,10 +366,12 @@ case "${command}" in
     dojo -c Dojofile-infra "./tasks _get_authorisation_token"
     ;;
   _get_mesh_mailbox_messages)
+    check_env
     authorization_token=$(_get_authorisation_token)
     _get_mesh_mailbox_messages "$authorization_token"
     ;;
   _acknowledge_mesh_mailbox_message)
+    check_env
     authorization_token=$(_get_authorisation_token)
     _acknowledge_mesh_mailbox_message "$authorization_token" $2
     ;;
