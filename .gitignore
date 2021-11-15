@@ -61,11 +61,8 @@ coverage
 .vscode/
 /venv/
 
+# certs
+/certs/*
+
 # Python cache
 __pycache__/
-
-# certs
-certs/dev
-certs/test
-certs/pre-prod
-certs/prod

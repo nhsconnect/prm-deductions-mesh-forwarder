@@ -46,11 +46,58 @@ function set_image_tag() {
   echo "setting image tag $IMAGE_TAG"
 }
 
+function _acknowledge_mesh_mailbox_message() {
+  mkdir -p "certs"
+  get_authorisation
+  authorization_token=$1
+  message_id=$2
+
+  if [[ -z "${authorization_token}" ]]; then
+     echo "You need to provide an authorization token"
+     exit 1
+  fi
+  if [[ -z "${message_id}" ]]; then
+     echo "You need to provide a message ID"
+     exit 1
+  fi
+
+  curl -k --request "PUT" \
+    --cacert "certs/cacert.pem" \
+    --key "certs/key.pem" \
+    --cert "certs/cert.pem" \
+    --header "Authorization: $authorization_token" \
+    "https://msg.intspineservices.nhs.uk/messageexchange/${MAIL_BOX_ID}/inbox/${message_id}/status/acknowledged"
+}
+
+function _get_mesh_mailbox_messages() {
+  mkdir -p "certs"
+  get_authorisation
+  authorization_token=$1
+
+  if [[ -z "${authorization_token}" ]]; then
+     echo "You need to provide an authorization token"
+     exit 1
+  fi
+
+  curl -k --request "GET" \
+    --cacert "certs/cacert.pem" \
+    --key "certs/key.pem" \
+    --cert "certs/cert.pem" \
+    --header "Authorization: $authorization_token" \
+    "https://msg.intspineservices.nhs.uk/messageexchange/${MAIL_BOX_ID}/inbox"
+}
+
 function get_authorisation() {
   check_env
   export SHARED_SECRET=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-shared-secret")
   export MAIL_BOX_ID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-id")
   export MAIL_BOX_PASS=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-password")
+}
+
+function _get_authorisation_token() {
+  _assume_environment_role $NHS_ENVIRONMENT
+  get_authorisation
+  python3 auth-creation.py $SHARED_SECRET $MAIL_BOX_ID $MAIL_BOX_PASS
 }
 
 function get_subscriptions_env() {
@@ -304,13 +351,19 @@ case "${command}" in
     echo "https://digital.nhs.uk/forms/combined-endpoint-and-service-registration-request"
     ;;
   _get_authorisation_token)
-    _assume_environment_role $NHS_ENVIRONMENT
-    get_authorisation
-    python3 auth-creation.py $SHARED_SECRET $MAIL_BOX_ID $MAIL_BOX_PASS
+    _get_authorisation_token
     ;;
   get_authorisation_token)
     check_env
     dojo -c Dojofile-infra "./tasks _get_authorisation_token"
+    ;;
+  _get_mesh_mailbox_messages)
+    authorization_token=$(_get_authorisation_token)
+    _get_mesh_mailbox_messages "$authorization_token"
+    ;;
+  _acknowledge_mesh_mailbox_message)
+    authorization_token=$(_get_authorisation_token)
+    _acknowledge_mesh_mailbox_message "$authorization_token" $2
     ;;
   _create_nems_subscription_and_update_ssm)
     set_nems_env
