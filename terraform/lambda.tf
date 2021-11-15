@@ -75,10 +75,10 @@ resource "aws_sns_topic_subscription" "alarm_notifications_lambda_subscription" 
 }
 
 resource "aws_sns_topic" "alarm_notifications" {
-  name = "${var.environment}-prm-deductions-alarm-notifications-sns-topic"
+  name = "${var.environment}-alarm-notifications-sns-topic"
 
   tags = {
-    Name = "${var.environment}-prm-deductions-alarm-notifications-sns-topic"
+    Name = "${var.environment}-alarm-notifications-sns-topic"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
