@@ -1,9 +1,9 @@
 resource "aws_kms_key" "sns_sqs_encryption" {
   description = "Custom KMS Key to enable server side encryption for SNS and SQS"
-  policy = data.aws_iam_policy_document.sns_sqs_kms_key_policy_doc.json
+  policy      = data.aws_iam_policy_document.sns_sqs_kms_key_policy_doc.json
 
   tags = {
-    Name = "${var.environment}-sns-sqs-encryption-kms-key"
+    Name        = "${var.environment}-sns-sqs-encryption-kms-key"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
@@ -20,9 +20,9 @@ data "aws_iam_policy_document" "sns_sqs_kms_key_policy_doc" {
 
     principals {
       identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-      type = "AWS"
+      type        = "AWS"
     }
-    actions = ["kms:*"]
+    actions   = ["kms:*"]
     resources = ["*"]
   }
 
@@ -31,7 +31,23 @@ data "aws_iam_policy_document" "sns_sqs_kms_key_policy_doc" {
 
     principals {
       identifiers = ["sns.amazonaws.com"]
-      type = "Service"
+      type        = "Service"
+    }
+
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey*"
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+
+    principals {
+      identifiers = ["cloudwatch.amazonaws.com"]
+      type        = "Service"
     }
 
     actions = [
@@ -44,23 +60,23 @@ data "aws_iam_policy_document" "sns_sqs_kms_key_policy_doc" {
 }
 
 resource "aws_sns_topic" "nems_events" {
-  name = "${var.environment}-${var.component_name}-nems-events-sns-topic"
+  name              = "${var.environment}-${var.component_name}-nems-events-sns-topic"
   kms_master_key_id = aws_kms_key.sns_sqs_encryption.id
 
   tags = {
-    Name = "${var.environment}-${var.component_name}-nems-events-sns-topic"
+    Name        = "${var.environment}-${var.component_name}-nems-events-sns-topic"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
 }
 
 resource "aws_sqs_queue" "observability" {
-  name                       = "${var.environment}-${var.component_name}-nems-events-observability-queue"
-  message_retention_seconds  = 1800
-  kms_master_key_id = aws_kms_key.sns_sqs_encryption.id
+  name                      = "${var.environment}-${var.component_name}-nems-events-observability-queue"
+  message_retention_seconds = 1800
+  kms_master_key_id         = aws_kms_key.sns_sqs_encryption.id
 
   tags = {
-    Name = "${var.environment}-${var.component_name}-nems-events-observability-queue"
+    Name        = "${var.environment}-${var.component_name}-nems-events-observability-queue"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
@@ -106,8 +122,8 @@ data "aws_iam_policy_document" "sqs_policy_doc" {
 
 
 resource "aws_ssm_parameter" "sns_sqs_kms_key_id" {
-  name = "/repo/${var.environment}/output/${var.repo_name}/sns-sqs-kms-key-id"
-  type = "String"
+  name  = "/repo/${var.environment}/output/${var.repo_name}/sns-sqs-kms-key-id"
+  type  = "String"
   value = aws_kms_key.sns_sqs_encryption.id
 
   tags = {
@@ -117,8 +133,8 @@ resource "aws_ssm_parameter" "sns_sqs_kms_key_id" {
 }
 
 resource "aws_ssm_parameter" "nems_events_topic_arn" {
-  name = "/repo/${var.environment}/output/${var.repo_name}/nems-events-topic-arn"
-  type = "String"
+  name  = "/repo/${var.environment}/output/${var.repo_name}/nems-events-topic-arn"
+  type  = "String"
   value = aws_sns_topic.nems_events.arn
 
   tags = {
