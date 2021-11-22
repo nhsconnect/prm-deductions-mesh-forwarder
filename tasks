@@ -363,7 +363,7 @@ case "${command}" in
     ;;
   get_authorisation_token)
     check_env
-    dojo -c Dojofile-infra "./tasks _get_authorisation_token"
+    dojo -c Dojofile-python "./tasks _get_authorisation_token"
     ;;
   _get_mesh_mailbox_messages)
     check_env
