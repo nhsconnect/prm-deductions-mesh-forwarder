@@ -4,11 +4,6 @@ service_desired_count = "1"
 cloudwatch_alarm_evaluation_periods = 5
 poll_frequency = "10"
 
-task_cpu    = 256
-task_memory = 512
-
-message_destination = "sns"
-
 mesh_url = "https://msg.intspineservices.nhs.uk"
 mesh_mailbox_ssm_param_name = "/repo/test/user-input/external/mesh-mailbox-id "
 mesh_password_ssm_param_name = "/repo/test/user-input/external/mesh-mailbox-password"

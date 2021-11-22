@@ -10,6 +10,10 @@ Follow the links to download
 - [kudulab/dojo](https://github.com/kudulab/dojo#installation)
 
 
+### Manual query and send interactions
+
+Please refer to [MESH summary page on confluence](https://gpitbjss.atlassian.net/wiki/spaces/TW/pages/11604623415/MESH) and child pages.
+
 ### AWS helpers
 
 This repository imports shared AWS helpers from [prm-deductions-support-infra](https://github.com/nhsconnect/prm-deductions-support-infra/).
