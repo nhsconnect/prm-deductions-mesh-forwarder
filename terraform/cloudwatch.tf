@@ -1,5 +1,6 @@
 locals {
   inbox_message_count_metric_name = "MeshInboxMessageCount"
+  error_logs_metric_name          = "ErrorCountInLogs"
   mesh_forwarder_metric_namespace = "MeshForwarder"
 }
 
@@ -38,4 +39,32 @@ resource "aws_cloudwatch_metric_alarm" "inbox-messages-not-consumed" {
   actions_enabled     = "true"
   alarm_actions       = [aws_sns_topic.alarm_notifications.arn]
   ok_actions          = [aws_sns_topic.alarm_notifications.arn]
+}
+
+resource "aws_cloudwatch_log_metric_filter" "error_log_metric_filter" {
+  name           = "${var.environment}-${var.component_name}-error-logs"
+  pattern        = "{ $.level = \"ERROR\" }"
+  log_group_name = aws_cloudwatch_log_group.log_group.name
+
+  metric_transformation {
+    name          = local.error_logs_metric_name
+    namespace     = local.mesh_forwarder_metric_namespace
+    value         = 1
+    default_value = 0
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "error_log_alarm" {
+  alarm_name                = "${var.environment}-${var.component_name}-error-logs"
+  comparison_operator       = "GreaterThanThreshold"
+  threshold                 = "0"
+  evaluation_periods        = "1"
+  period                    = "60"
+  metric_name               = local.error_logs_metric_name
+  namespace                 = local.mesh_forwarder_metric_namespace
+  statistic                 = "Sum"
+  alarm_description         = "This alarm monitors errors logs in ${var.component_name}"
+  treat_missing_data        = "missing"
+  actions_enabled           = "true"
+  alarm_actions             = [aws_sns_topic.alarm_notifications.arn]
 }
