@@ -1,4 +1,6 @@
-
+locals {
+  alarm_webhook_ssm_path = "/repo/${var.environment}/user-input/external/alarm-notifications-webhook-url"
+}
 
 resource "aws_lambda_function" "alarm_notifications_lambda" {
   filename      = var.alarm_lambda_zip
@@ -16,7 +18,7 @@ resource "aws_lambda_function" "alarm_notifications_lambda" {
 
   environment {
     variables = {
-      ALARM_WEBHOOK_URL_PARAM_NAME = "/repo/${var.environment}/user-input/external/alarm-notifications-webhook-url"
+      ALARM_WEBHOOK_URL_PARAM_NAME = local.alarm_webhook_ssm_path
     }
   }
 }
@@ -45,7 +47,7 @@ data "aws_iam_policy_document" "webhook_ssm_access" {
     ]
 
     resources = [
-      "arn:aws:ssm:${var.region}:${local.account_id}:parameter${var.alarm_webhook_url_ssm_param_name}"
+      "arn:aws:ssm:${var.region}:${local.account_id}:parameter${local.alarm_webhook_ssm_path}"
     ]
   }
 }
