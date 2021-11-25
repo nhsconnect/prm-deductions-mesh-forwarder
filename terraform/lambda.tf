@@ -16,7 +16,7 @@ resource "aws_lambda_function" "alarm_notifications_lambda" {
 
   environment {
     variables = {
-      ALARM_WEBHOOK_URL_PARAM_NAME = var.alarm_webhook_url_ssm_param_name
+      ALARM_WEBHOOK_URL_PARAM_NAME = "/repo/${var.environment}/user-input/external/alarm-notifications-webhook-url"
     }
   }
 }
