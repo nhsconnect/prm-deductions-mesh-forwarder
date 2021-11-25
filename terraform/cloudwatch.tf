@@ -43,7 +43,7 @@ resource "aws_cloudwatch_metric_alarm" "inbox-messages-not-consumed" {
 
 resource "aws_cloudwatch_log_metric_filter" "error_log_metric_filter" {
   name           = "${var.environment}-${var.component_name}-error-logs"
-  pattern        = "{ $.level = \"ERROR\" }"
+  pattern        = "{ $.error = * }"
   log_group_name = aws_cloudwatch_log_group.log_group.name
 
   metric_transformation {
