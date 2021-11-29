@@ -68,6 +68,11 @@ variable "mesh_ca_cert_ssm_param_name" {
   description = "Name of SSM parameter containing MESH CA certificate"
 }
 
+variable "disable_message_header_validation" {
+  type        = string
+  description = "if true then relaxes the restrictions on MESH message headers"
+}
+
 variable "message_destination" {}
 
 variable "cloudwatch_alarm_evaluation_periods" {}
