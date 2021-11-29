@@ -1,7 +1,10 @@
 locals {
   inbox_message_count_metric_name = "MeshInboxMessageCount"
   error_logs_metric_name          = "ErrorCountInLogs"
+  sns_topic_error_logs_metric_name = "NumberOfNotificationsFailed"
   mesh_forwarder_metric_namespace = "MeshForwarder"
+  sns_topic_namespace = "AWS/SNS"
+  mesh_forwarder_sns_topic_name = "${var.environment}-mesh-forwarder-nems-events-sns-topic"
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {
@@ -64,6 +67,24 @@ resource "aws_cloudwatch_metric_alarm" "error_log_alarm" {
   namespace                 = local.mesh_forwarder_metric_namespace
   statistic                 = "Sum"
   alarm_description         = "This alarm monitors errors logs in ${var.component_name}"
+  treat_missing_data        = "notBreaching"
+  actions_enabled           = "true"
+  alarm_actions             = [aws_sns_topic.alarm_notifications.arn]
+}
+
+resource "aws_cloudwatch_metric_alarm" "sns_topic_error_log_alarm" {
+  alarm_name                = "${local.mesh_forwarder_sns_topic_name}-error-logs"
+  comparison_operator       = "GreaterThanThreshold"
+  threshold                 = "0"
+  evaluation_periods        = "1"
+  period                    = "60"
+  metric_name               = local.sns_topic_error_logs_metric_name
+  namespace                 = local.sns_topic_namespace
+  dimensions = {
+    TopicName = local.mesh_forwarder_sns_topic_name
+  }
+  statistic                 = "Sum"
+  alarm_description         = "This alarm monitors errors logs in ${local.mesh_forwarder_sns_topic_name}"
   treat_missing_data        = "notBreaching"
   actions_enabled           = "true"
   alarm_actions             = [aws_sns_topic.alarm_notifications.arn]
