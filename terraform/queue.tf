@@ -85,7 +85,12 @@ resource "aws_sqs_queue" "observability" {
 
 resource "aws_ssm_parameter" "nems_events_observability_queue" {
   name = "/repo/${var.environment}/output/${var.component_name}/nems-events-observability-queue"
-  value = aws_sqs_queue.nems_events_observability_queue.value
+  type = "String"
+  value = aws_sqs_queue.observability.id
+  tags = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_sns_topic_subscription" "nems_events_to_observability_queue" {
