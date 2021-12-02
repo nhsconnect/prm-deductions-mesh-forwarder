@@ -20,9 +20,20 @@ resource "aws_ecs_service" "mesh_forwarder" {
 resource "aws_ecs_cluster" "mesh-forwarder-ecs-cluster" {
   name = "${var.environment}-${var.component_name}-ecs-cluster"
 
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
+
   tags = {
     Name = "${var.environment}-${var.component_name}"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
+}
+
+resource "aws_ssm_parameter" "cluster_name" {
+  name  = "/repo/${var.environment}/output/${var.component_name}/mesh-forwarder-ecs-cluster-name"
+  type  = "String"
+  value = aws_ecs_cluster.mesh-forwarder-ecs-cluster.name
 }
