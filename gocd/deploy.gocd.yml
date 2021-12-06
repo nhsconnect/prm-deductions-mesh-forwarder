@@ -4,9 +4,6 @@ common:
     resources:
       - docker
     artifacts:
-      - build:
-          source: lambda/build/alarm.zip
-          destination: lambda/build/
     tasks:
       - exec:
           command: /bin/bash

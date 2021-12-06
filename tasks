@@ -292,25 +292,6 @@ EOF
   openssl req -new -key ${keys_file_name}.key -out ${keys_file_name}.csr -config ${CERTIFICATES_DIR}/csr.conf
 }
 
-
-function build_lambda {
-    lambda_name=$1
-
-    build_dir=lambda/build/$lambda_name
-    rm -rf $build_dir
-    mkdir -p $build_dir
-
-    cp lambda/$lambda_name/*.py $build_dir
-
-    pushd $build_dir
-    zip -r -X ../$lambda_name.zip .
-    popd
-}
-
-function build_lambdas {
-    build_lambda alarm
-}
-
 ###########
 ## TASKS ##
 ###########
@@ -335,7 +316,6 @@ case "${command}" in
     tf_plan "$2" "$IMAGE_TAG"
     ;;
   tf_plan)
-    build_lambdas
     check_env
     dojo -c Dojofile-infra "./tasks _tf_plan $2"
     ;;
