@@ -40,8 +40,8 @@ resource "aws_cloudwatch_metric_alarm" "inbox-messages-not-consumed" {
   alarm_description   = "This alarm is triggered if the mailbox doesn't get empty in a given evaluation time period"
   treat_missing_data  = "breaching"
   actions_enabled     = "true"
-  alarm_actions       = [var.alarm_sns_arn]
-  ok_actions          = [var.alarm_sns_arn]
+  alarm_actions       = [data.aws_sns_topic.alarm_notifications.arn]
+  ok_actions          = [data.aws_sns_topic.alarm_notifications.arn]
 }
 
 resource "aws_cloudwatch_log_metric_filter" "error_log_metric_filter" {
@@ -69,7 +69,7 @@ resource "aws_cloudwatch_metric_alarm" "error_log_alarm" {
   alarm_description         = "This alarm monitors errors logs in ${var.component_name}"
   treat_missing_data        = "notBreaching"
   actions_enabled           = "true"
-  alarm_actions             = [var.alarm_sns_arn]
+  alarm_actions             = [data.aws_sns_topic.alarm_notifications.arn]
 }
 
 resource "aws_cloudwatch_metric_alarm" "sns_topic_error_log_alarm" {
@@ -87,5 +87,5 @@ resource "aws_cloudwatch_metric_alarm" "sns_topic_error_log_alarm" {
   alarm_description         = "This alarm monitors errors logs in ${local.mesh_forwarder_sns_topic_name}"
   treat_missing_data        = "notBreaching"
   actions_enabled           = "true"
-  alarm_actions             = [var.alarm_sns_arn]
+  alarm_actions             = [data.aws_sns_topic.alarm_notifications.arn]
 }

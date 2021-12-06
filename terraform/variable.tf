@@ -76,5 +76,3 @@ variable "disable_message_header_validation" {
 variable "message_destination" {}
 
 variable "cloudwatch_alarm_evaluation_periods" {}
-
-variable "alarm_sns_arn" {}

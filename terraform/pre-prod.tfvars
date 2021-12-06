@@ -14,5 +14,3 @@ mesh_client_cert_ssm_param_name = "/repo/pre-prod/user-input/external/mesh-mailb
 mesh_client_key_ssm_param_name = "/repo/pre-prod/user-input/external/mesh-mailbox-client-key"
 mesh_ca_cert_ssm_param_name = "/repo/pre-prod/user-input/external/mesh-mailbox-ca-cert"
 
-alarm_sns_arn = "arn:aws:sns:eu-west-2:108148468272:pre-prod-alarm-notifications-sns-topic"
-
