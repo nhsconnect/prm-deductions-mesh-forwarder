@@ -19,8 +19,8 @@ def create_subscription(config):
                         '	<use value="work"/>' + \
                         '</contact>' + \
                         '<reason value="To facilate GP2GP transfer of EHR for suspended patients from their previous practise"/>' + \
-                        f'<criteria value="/Bundle?type=message&amp;MessageHeader.event=pds-change-of-gp-1&amp;serviceType=GP' \
-                        f'&amp;subscriptionRuleType=HSS&amp;Organization.identifier={config.ods_code}" />' + \
+                        f'<criteria value="/Bundle?type=message&amp;MessageHeader.event=pds-change-of-gp-1&amp;serviceType=HSS' \
+                        f'&amp;subscriptionRuleType=COUNTRYCODE&amp;Organization.identifier=E92000001" />' + \
                         '<channel>' + \
                         '	<type value="message"/>' + \
                         f'	<endpoint value="{config.mesh_mailbox_id}"/>' + \
