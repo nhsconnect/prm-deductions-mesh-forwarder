@@ -9,7 +9,7 @@ from create_subscription_if_not_exists import create_subscription_if_not_exists
 def ensure_subscribed(config=read_subscribe_config_from_env()):
     subscribed_nems_id = create_subscription_if_not_exists(subscription_creator=create_subscription,
                                                            subscription_reader=read_subscription, config=config)
-    print(subscribed_nems_id)
+    print(f"nems subscription id is {subscribed_nems_id}")
     return subscribed_nems_id
 
 

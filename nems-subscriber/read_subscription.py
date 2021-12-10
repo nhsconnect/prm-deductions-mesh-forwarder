@@ -13,7 +13,7 @@ def read_subscription(config):
         cert=(f"../certs/{config.nhs_env}/nems-client.crt", f"../certs/{config.nhs_env}/nems-client.key"),
         verify=f"../certs/{config.nhs_env}/nems-ca-certs.crt"
     )
-    print('Requested', r.status_code, r.headers, r.content)
+    print('Retrieve Subscription Response', r.status_code, r.headers, r.content)
     return r.status_code
 
 

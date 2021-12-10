@@ -37,10 +37,12 @@ def create_subscription(config):
         verify=f"../certs/{config.nhs_env}/nems-ca-certs.crt"
     )
 
-    print('Requested', r.status_code, r.headers, r.content)
+    print('Create Subscription Response', r.status_code, r.headers, r.content)
 
     if r.status_code == 201:
-        return extract_subscription_id_from_headers(r.headers)
+        subscription_id = extract_subscription_id_from_headers(r.headers)
+        print(f"Successfully created new nems subscription: subscription id - {subscription_id}")
+        return subscription_id
     else:
         raise Exception(f"Error creating subscription: Status Code {r.status_code}. Error {r.content.decode()}")
 

@@ -13,7 +13,7 @@ def delete_subscription(config):
         verify=f"../certs/{config.nhs_env}/nems-ca-certs.crt"
     )
 
-    print('Requested', r.status_code, r.headers, r.content)
+    print('Delete Subscription Response', r.status_code, r.headers, r.content)
     return r.status_code
 
 

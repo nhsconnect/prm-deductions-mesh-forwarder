@@ -4,7 +4,7 @@ import os
 
 def send_to_smm_with_client(new_subscription_id, current_subscription_id, client, nhs_environment):
     if new_subscription_id != current_subscription_id:
-        print(f'Updating subscription id to {new_subscription_id}')
+        print(f'Updating nems subscription id in smm to be {new_subscription_id}')
         response = client.put_parameter(
             Name=f'/repo/{nhs_environment}/user-input/external/nems-subscription-id',
             Value=new_subscription_id,
@@ -12,9 +12,10 @@ def send_to_smm_with_client(new_subscription_id, current_subscription_id, client
             Overwrite=True
         )
         print(response)
-        print(f'Successfully saved new subscription id {new_subscription_id} to ssm')
+        print(f'Successfully saved new nems subscription id {new_subscription_id} to ssm')
     else:
-        print(f'Not updating subscription id because new id {new_subscription_id} identical to current id {current_subscription_id}')
+        print(f'Not updating nems subscription id in ssm because new id {new_subscription_id} is identical to current '
+              f'ssm id {current_subscription_id}')
 
 
 def send_to_ssm(new_subscription_id, current_subscription_id):
