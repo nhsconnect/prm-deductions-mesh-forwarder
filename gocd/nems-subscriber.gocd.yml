@@ -10,7 +10,7 @@ pipelines:
           - nems-subscriber/**/*.*
           - gocd/nems-subscriber.gocd.yml
     stages:
-      - test:
+      - run_tests:
           clean_workspace: false
           jobs:
             test:
@@ -22,4 +22,18 @@ pipelines:
                     arguments:
                       - -c
                       - ./tasks test_nems_subscriber
+      - dev:
+          clean_workspace: true
+          jobs:
+            generate_keys:
+              resources:
+                - docker
+              environment_variables:
+                NHS_ENVIRONMENT: dev
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks create_nems_subscription_and_update_ssm
 
