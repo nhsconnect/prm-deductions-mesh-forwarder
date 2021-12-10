@@ -1,6 +1,6 @@
 environment    = "test"
 
-service_desired_count = "1"
+service_desired_count = "2"
 cloudwatch_alarm_evaluation_periods = 5
 poll_frequency = "10"
 
