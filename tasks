@@ -356,6 +356,7 @@ case "${command}" in
     _acknowledge_mesh_mailbox_message "$authorization_token" $2
     ;;
   _create_nems_subscription_and_update_ssm)
+    _assume_environment_role $NHS_ENVIRONMENT
     set_nems_env
     python3 create_subscription_and_update_ssm.py
     echo Successfully processed subscription

@@ -25,7 +25,7 @@ pipelines:
       - dev:
           clean_workspace: true
           jobs:
-            generate_keys:
+            subscribe:
               resources:
                 - docker
               environment_variables:
