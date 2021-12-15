@@ -6,7 +6,7 @@ from create_headers import create_headers
 
 
 def create_subscription(config):
-    print('Requesting Create Subscription...')
+    print(f'Requesting Create Subscription: {config.nems_url}')
 
     subscribe_payload = '<Subscription xmlns="http://hl7.org/fhir">' + \
                         '<meta>' + \
@@ -15,11 +15,11 @@ def create_subscription(config):
                         '<status value="requested"/>' + \
                         '<contact>' + \
                         '	<system value="url"/>' + \
-                        f'	<value value="https://directory.spineservices.nhs.uk/STU3/Organization/{config.ods_code}"/>' + \
+                        f'	<value value="https://directory.spineservices.nhs.uk/STU3/Organization/{config.ods_code.upper()}"/>' + \
                         '	<use value="work"/>' + \
                         '</contact>' + \
                         '<reason value="To facilate GP2GP transfer of EHR for suspended patients from their previous practise"/>' + \
-                        f'<criteria value="/Bundle?type=message&amp;MessageHeader.event=pds-change-of-gp-1&amp;serviceType=HSS' \
+                        f'<criteria value="/Bundle?type=message&amp;MessageHeader.event=pds-change-of-gp-1' \
                         f'&amp;subscriptionRuleType=COUNTRYCODE&amp;Organization.identifier=E92000001" />' + \
                         '<channel>' + \
                         '	<type value="message"/>' + \
@@ -27,7 +27,7 @@ def create_subscription(config):
                         '</channel>' + \
                         '</Subscription>'
 
-    print('create payload', subscribe_payload)
+    print('Create subscription payload', subscribe_payload)
 
     r = requests.post(
         config.nems_url,

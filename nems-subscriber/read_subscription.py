@@ -5,10 +5,11 @@ from create_headers import create_headers
 
 
 def read_subscription(config):
-    print('Requesting Retrieve Subscription...')
+    request_url = f"{config.nems_url}/{config.nems_subscription_id}"
+    print(f'Requesting Retrieve Subscription: {request_url}')
 
     r = requests.get(
-        f"{config.nems_url}/{config.nems_subscription_id}",
+        request_url,
         headers=create_headers(config, 'Get'),
         cert=(f"../certs/{config.nhs_env}/nems-client.crt", f"../certs/{config.nhs_env}/nems-client.key"),
         verify=f"../certs/{config.nhs_env}/nems-ca-certs.crt"
