@@ -24,8 +24,8 @@ def _read_env_var(name, required=True):
 
 def read_subscribe_config_from_env():
     return Config(
-        repo_asid=_read_env_var('OUR_ASID'),
-        ods_code=_read_env_var('OUR_ODS_CODE'),
+        repo_asid=_read_env_var('REPO_ASID'),
+        ods_code=_read_env_var('ODS_CODE'),
         nems_url=_read_env_var('NEMS_URL'),
         nems_asid=_read_env_var('NEMS_ASID'),
         env_url_suffix=_read_env_var('ENV_URL_SUFFIX'),

@@ -63,6 +63,7 @@ coverage
 
 # certs
 /certs/*
+/csr/*
 
 # Python cache
 __pycache__/
