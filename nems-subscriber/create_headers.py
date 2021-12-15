@@ -11,7 +11,8 @@ def create_headers(config, method):
         'Authorization': f'Bearer {token}',
         'InteractionID': f'urn:nhs:names:services:clinicals-sync:SubscriptionsApi{method}'
     }
-    print('Headers created for request: ', headers)
+    print(f"Headers created for request: fromASID - {config.repo_asid}, toASID - {config.nems_asid}, "
+          f"InteractionID - {headers.get('InteractionID')}", )
     return headers
 
 
