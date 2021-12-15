@@ -13,4 +13,6 @@ def create_subscription_if_not_exists(subscription_reader, subscription_creator,
               f"creating new nems subscription")
         return subscription_creator(config)
 
+    print(f"Subscription already exists for nems subscription id {config.nems_subscription_id} so not"
+          f"sending request to create new subscription")
     return config.nems_subscription_id
