@@ -89,4 +89,23 @@ pipelines:
       NHS_ENVIRONMENT: pre-prod
     stages:
       - *common_stages
+  'prm-deductions-mesh-forwarder.prod':
+    group: continuity-service
+    label_template: '${git[:8]}'
+    materials:
+      git:
+        type: configrepo
+        blacklist:
+          - docs/**/*.*
+          - nems-subscriber/**/*.*
+      mesh_forwarder_imported_image:
+        pipeline: prm-mesh-aws-forwarder
+        stage: build_inbox_forwarder
+      mesh_forwarder_test:
+        pipeline: prm-deductions-mesh-forwarder.pre-prod
+        stage: deploy
+    environment_variables:
+      NHS_ENVIRONMENT: prod
+    stages:
+      - *common_stages
 
