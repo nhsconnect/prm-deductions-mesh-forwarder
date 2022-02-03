@@ -9,6 +9,5 @@ data "aws_ssm_parameter" "deductions_private_vpc_id" {
 }
 
 data "aws_sns_topic" "alarm_notifications" {
-  count = var.environment == "prod" ? 0 : 1
   name = "${var.environment}-alarm-notifications-sns-topic"
 }

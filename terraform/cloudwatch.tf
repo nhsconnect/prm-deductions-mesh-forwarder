@@ -5,7 +5,7 @@ locals {
   mesh_forwarder_metric_namespace = "MeshForwarder"
   sns_topic_namespace = "AWS/SNS"
   mesh_forwarder_sns_topic_name = "${var.environment}-mesh-forwarder-nems-events-sns-topic"
-  alarm_actions = var.environment == "prod" ? [] : [data.aws_sns_topic.alarm_notifications[0].arn]
+  alarm_actions = [data.aws_sns_topic.alarm_notifications.arn]
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {
