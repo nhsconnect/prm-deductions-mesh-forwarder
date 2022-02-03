@@ -5,6 +5,7 @@ locals {
   mesh_forwarder_metric_namespace = "MeshForwarder"
   sns_topic_namespace = "AWS/SNS"
   mesh_forwarder_sns_topic_name = "${var.environment}-mesh-forwarder-nems-events-sns-topic"
+  alarm_actions = var.environment == "prod" ? [] : [data.aws_sns_topic.alarm_notifications[0].arn]
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {
@@ -40,8 +41,8 @@ resource "aws_cloudwatch_metric_alarm" "inbox-messages-not-consumed" {
   alarm_description   = "This alarm is triggered if the mailbox doesn't get empty in a given evaluation time period"
   treat_missing_data  = "breaching"
   actions_enabled     = "true"
-  alarm_actions       = [data.aws_sns_topic.alarm_notifications.arn]
-  ok_actions          = [data.aws_sns_topic.alarm_notifications.arn]
+  alarm_actions       = local.alarm_actions
+  ok_actions          = local.alarm_actions
 }
 
 resource "aws_cloudwatch_log_metric_filter" "error_log_metric_filter" {
@@ -69,7 +70,7 @@ resource "aws_cloudwatch_metric_alarm" "error_log_alarm" {
   alarm_description         = "This alarm monitors errors logs in ${var.component_name}"
   treat_missing_data        = "notBreaching"
   actions_enabled           = "true"
-  alarm_actions             = [data.aws_sns_topic.alarm_notifications.arn]
+  alarm_actions             = local.alarm_actions
 }
 
 resource "aws_cloudwatch_metric_alarm" "sns_topic_error_log_alarm" {
@@ -87,5 +88,5 @@ resource "aws_cloudwatch_metric_alarm" "sns_topic_error_log_alarm" {
   alarm_description         = "This alarm monitors errors logs in ${local.mesh_forwarder_sns_topic_name}"
   treat_missing_data        = "notBreaching"
   actions_enabled           = "true"
-  alarm_actions             = [data.aws_sns_topic.alarm_notifications.arn]
+  alarm_actions             = local.alarm_actions
 }
