@@ -1,9 +1,8 @@
 format_version: 4
 common:
-  deploy_job: &deploy_job
+  plan_job: &plan_job
     resources:
       - docker
-    artifacts:
     tasks:
       - exec:
           command: /bin/bash
@@ -14,7 +13,12 @@ common:
           command: /bin/bash
           arguments:
             - -c
-            - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_FORWARDER_IMPORTED_IMAGE ./tasks tf_plan create
+            -  IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_FORWARDER_IMPORTED_IMAGE ./tasks tf_plan create
+  deploy_job: &deploy_job
+    resources:
+      - docker
+    artifacts:
+    tasks:
       - exec:
           command: /bin/bash
           arguments:
@@ -26,7 +30,23 @@ common:
             - -c
             - ./tasks wait_ecs
   common_stages: &common_stages
+    - plan:
+        clean_workspace: true
+        jobs:
+          deploy: *plan_job
     - deploy:
+        clean_workspace: true
+        jobs:
+          deploy: *deploy_job
+  prod_stages: &prod_stages
+    - plan:
+        clean_workspace: true
+        jobs:
+          deploy: *plan_job
+    - deploy:
+        approval:
+          type: manual
+          allow_only_on_success: true
         clean_workspace: true
         jobs:
           deploy: *deploy_job
@@ -49,8 +69,7 @@ pipelines:
         stage: import
     environment_variables:
       NHS_ENVIRONMENT: dev
-    stages:
-      - *common_stages
+    stages: *common_stages
   'prm-deductions-mesh-forwarder.test':
     group: continuity-service
     label_template: '${git[:8]}'
@@ -68,8 +87,7 @@ pipelines:
         stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: test
-    stages:
-      - *common_stages
+    stages: *common_stages
   'prm-deductions-mesh-forwarder.pre-prod':
     group: continuity-service
     label_template: '${git[:8]}'
@@ -87,8 +105,7 @@ pipelines:
         stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: pre-prod
-    stages:
-      - *common_stages
+    stages: *common_stages
   'prm-deductions-mesh-forwarder.prod':
     group: continuity-service
     label_template: '${git[:8]}'
@@ -106,6 +123,5 @@ pipelines:
         stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: prod
-    stages:
-      - *common_stages
+    stages: *prod_stages
 
