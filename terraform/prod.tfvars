@@ -1,6 +1,8 @@
 environment    = "prod"
 
-service_desired_count = "2"
+//desired count should be 1 or 2 again once we obtain mesh-mailbox secrets.
+service_desired_count = "0"
+
 cloudwatch_alarm_evaluation_periods = 30
 log_level = "info"
 
