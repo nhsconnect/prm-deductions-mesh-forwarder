@@ -1,6 +1,5 @@
 environment    = "pre-prod"
 
-service_desired_count = "2"
 cloudwatch_alarm_evaluation_periods = 30
 log_level = "info"
 

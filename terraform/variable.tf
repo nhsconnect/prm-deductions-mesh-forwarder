@@ -24,7 +24,11 @@ variable "task_memory" {}
 
 variable "environment" {}
 
-variable "service_desired_count" {}
+variable "service_desired_count" {
+  type = number
+  description = "Number of desired instances of the service"
+  default = 1
+}
 
 variable "poll_frequency" {}
 
