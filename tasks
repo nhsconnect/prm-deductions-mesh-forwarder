@@ -271,6 +271,7 @@ req_extensions = req_ext
 distinguished_name = dn
 
 [ dn ]
+C = GB
 CN = ${common_name}
 
 [ req_ext ]
@@ -342,6 +343,17 @@ case "${command}" in
     csr)
      dojo -c Dojofile-infra "./tasks _csr"
       ;;
+  _csr_prod)
+    if [ -z $ODS_CODE ]; then
+      echo "Please specify ODS_CODE"
+      exit 4
+    fi
+    fqdn="nems-$ODS_CODE.nhsdigital.nhs.uk"
+    generate_csr "$ODS_CODE-nems-prod" $fqdn
+    ;;
+   csr_prod)
+    dojo -c Dojofile-infra "./tasks _csr_prod"
+    ;;
   _get_authorisation_token)
     _get_authorisation_token
     ;;
