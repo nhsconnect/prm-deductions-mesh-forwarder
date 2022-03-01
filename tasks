@@ -212,6 +212,19 @@ function tf_apply() {
   terraform output -json >tf-out.json
 }
 
+function generate_mesh_fqdn() {
+    if [[ "${NHS_ENVIRONMENT}" == prod ]]; then
+      if [ -z $MESH_MAILBOX_ID  ]; then
+        echo "Please specify  MESH_MAILBOX_ID"
+        exit 4
+      fi
+      export MESH_FQDN="$MESH_MAILBOX_ID.$ODS_CODE.api.mesh-client.nhs.uk"
+    else
+      export MESH_FQDN="nems-non-prod-$NHS_ENVIRONMENT.$ODS_CODE.api.mesh-client.nhs.uk"
+    fi
+}
+
+
 ############################
 # Docker Related Functions #
 ############################
@@ -240,7 +253,6 @@ function push_registrations_forwarder_image_to_repo_ecr() {
   docker tag "$SRC_IMAGE_NAME_AND_TAG" "$IMAGE_FULL_URL"
   docker push "$IMAGE_FULL_URL"
 }
-
 
 function generate_csr {
   keys_file_name="$1"
@@ -355,16 +367,21 @@ case "${command}" in
     dojo -c Dojofile-infra "./tasks _csr_nems_prod"
     ;;
 
-  _csr_mesh_prod)
-    if [ -z $ODS_CODE || -z $MESH_MAILBOX_ID  ]; then
-      echo "Please specify ODS_CODE and MESH_MAILBOX_ID"
+  _csr_mesh)
+    check_env
+    if [ -z $ODS_CODE  ]; then
+      echo "Please specify ODS_CODE "
       exit 4
     fi
-    fqdn="$MESH_MAILBOX_ID.$ODS_CODE.api.mesh-client.nhs.uk"
-    generate_csr "$ODS_CODE-mesh-prod" $fqdn
+    generate_mesh_fqdn
+    generate_csr "$ODS_CODE-mesh-$NHS_ENVIRONMENT" $MESH_FQDN
+    echo "For Non prod the CSR has to be added to mesh mailbox request form"
+    echo "https://digital.nhs.uk/services/message-exchange-for-social-care-and-health-mesh/messaging-exchange-for-social-care-and-health-apply-for-a-mailbox"
+    echo "Details on how to fill out the form is on confluence"
+    echo "https://gpitbjss.atlassian.net/wiki/spaces/TW/pages/11604721782/Requesting+a+MESH+mailbox"
     ;;
-   csr_mesh_prod)
-    dojo -c Dojofile-infra "./tasks _csr_mesh_prod"
+   csr_mesh)
+    dojo -c Dojofile-infra "./tasks _csr_mesh"
     ;;
 
   _get_authorisation_token)
