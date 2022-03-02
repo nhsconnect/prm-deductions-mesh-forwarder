@@ -21,4 +21,4 @@ pipelines:
                 command: /bin/bash
                 arguments:
                   - -c
-                  - SOURCE_IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_FORWARDER_IMPORTED_IMAGE ./tasks _push_registrations_forwarder_image_to_repo_ecr
+                  - SOURCE_IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_FORWARDER_IMPORTED_IMAGE ./tasks _push_forwarder_image_to_repo_ecr
