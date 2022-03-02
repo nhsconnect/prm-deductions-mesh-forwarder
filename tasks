@@ -464,6 +464,7 @@ case "${command}" in
       echo "Please set SOURCE_IMAGE_TAG environment variable"
       exit 1
     fi
+    set_image_tag
     push_registrations_forwarder_image_to_repo_ecr
     ;;
   build_lambdas)
