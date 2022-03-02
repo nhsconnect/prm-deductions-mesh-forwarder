@@ -118,6 +118,27 @@ pipelines:
     environment_variables:
       NHS_ENVIRONMENT: pre-prod
     stages: *common_stages
+  'prm-deductions-mesh-forwarder.perf':
+    group: continuity-service
+    label_template: "${COUNT}-${git[:8]}"
+    materials:
+      git:
+        type: configrepo
+        blacklist:
+          - docs/**/*.*
+          - nems-subscriber/**/*.*
+      app:
+        pipeline: prm-deductions-mesh-forwarder
+        stage: import
+      mesh_forwarder_test:
+        pipeline: prm-deductions-mesh-forwarder.test
+        stage: deploy
+      e2e:
+        pipeline: continuity-e2e-tests.test
+        stage: test
+    environment_variables:
+      NHS_ENVIRONMENT: perf
+    stages: *common_stages
   'prm-deductions-mesh-forwarder.prod':
     group: continuity-service
     label_template: "${COUNT}-${git[:8]}"
