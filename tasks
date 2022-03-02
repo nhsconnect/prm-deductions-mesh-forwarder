@@ -41,9 +41,11 @@ function check_nhs_service() {
 }
 
 function set_image_tag() {
-  export IMAGE_TAG="$(echo $1)"
-
-  echo "setting image tag $IMAGE_TAG"
+  if [[ -z "${GO_DEPENDENCY_LABEL_APP}" ]]; then
+    export IMAGE_TAG=${GO_PIPELINE_LABEL:-$(git rev-parse HEAD | cut -c 1-8)}
+  else
+    export IMAGE_TAG=${GO_DEPENDENCY_LABEL_APP}
+  fi
 }
 
 function _acknowledge_mesh_mailbox_message() {
@@ -247,7 +249,7 @@ function configure_docker_repository_uri() {
 function push_registrations_forwarder_image_to_repo_ecr() {
   get_aws_account_id
   configure_docker_repository_uri
-  SRC_IMAGE_NAME_AND_TAG="${AWS_ACCOUNT_ID}.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/registrations/mesh-inbox-s3-forwarder:${IMAGE_TAG}"
+  SRC_IMAGE_NAME_AND_TAG="${AWS_ACCOUNT_ID}.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/registrations/mesh-inbox-s3-forwarder:${SOURCE_IMAGE_TAG}"
   docker pull "$SRC_IMAGE_NAME_AND_TAG"
   IMAGE_FULL_URL="${REPOSITORY_URI}:${IMAGE_TAG}"
   docker tag "$SRC_IMAGE_NAME_AND_TAG" "$IMAGE_FULL_URL"
@@ -326,7 +328,7 @@ case "${command}" in
     ;;
   _tf_plan)
     _assume_environment_role $NHS_ENVIRONMENT
-    set_image_tag "$IMAGE_TAG"
+    set_image_tag
     tf_plan "$2" "$IMAGE_TAG"
     ;;
   tf_plan)
@@ -440,6 +442,7 @@ case "${command}" in
     ;;
   promote_docker_image)
     check_env
+    set_image_tag
     promote_docker_image "$IMAGE_REPO_NAME:$IMAGE_TAG" "$NHS_ENVIRONMENT"
     ;;
   _venv)
@@ -457,8 +460,8 @@ case "${command}" in
     dojo -c Dojofile-infra "./tasks _wait_ecs"
     ;;
   _push_registrations_forwarder_image_to_repo_ecr)
-    if [ -z $IMAGE_TAG ]; then
-      echo "Please set IMAGE_TAG environment variable"
+    if [ -z $SOURCE_IMAGE_TAG ]; then
+      echo "Please set SOURCE_IMAGE_TAG environment variable"
       exit 1
     fi
     push_registrations_forwarder_image_to_repo_ecr

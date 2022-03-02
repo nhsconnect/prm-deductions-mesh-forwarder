@@ -12,12 +12,12 @@ common:
           command: /bin/bash
           arguments:
             - -c
-            - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_FORWARDER_IMPORTED_IMAGE ./tasks promote_docker_image
+            - ./tasks promote_docker_image
       - exec:
           command: /bin/bash
           arguments:
             - -c
-            -  IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_FORWARDER_IMPORTED_IMAGE ./tasks tf_plan create
+            - ./tasks tf_plan create
   deploy_job: &deploy_job
     resources:
       - docker
@@ -63,17 +63,14 @@ common:
 pipelines:
   'prm-deductions-mesh-forwarder.dev':
     group: continuity-service
-    label_template: '${git[:8]}'
+    label_template: "${COUNT}-${git[:8]}"
     materials:
       git:
         type: configrepo
         blacklist:
           - docs/**/*.*
           - nems-subscriber/**/*.*
-      mesh_forwarder_imported_image:
-        pipeline: prm-mesh-aws-forwarder
-        stage: build_inbox_forwarder
-      mesh_forwarder_image_import:
+      app:
         pipeline: prm-deductions-mesh-forwarder
         stage: import
     environment_variables:
@@ -81,16 +78,16 @@ pipelines:
     stages: *common_stages
   'prm-deductions-mesh-forwarder.test':
     group: continuity-service
-    label_template: '${git[:8]}'
+    label_template: "${COUNT}-${git[:8]}"
     materials:
       git:
         type: configrepo
         blacklist:
           - docs/**/*.*
           - nems-subscriber/**/*.*
-      mesh_forwarder_imported_image:
-        pipeline: prm-mesh-aws-forwarder
-        stage: build_inbox_forwarder
+      app:
+        pipeline: prm-deductions-mesh-forwarder
+        stage: import
       mesh_forwarder_dev:
         pipeline: prm-deductions-mesh-forwarder.dev
         stage: deploy
@@ -102,16 +99,16 @@ pipelines:
     stages: *common_stages
   'prm-deductions-mesh-forwarder.pre-prod':
     group: continuity-service
-    label_template: '${git[:8]}'
+    label_template: "${COUNT}-${git[:8]}"
     materials:
       git:
         type: configrepo
         blacklist:
           - docs/**/*.*
           - nems-subscriber/**/*.*
-      mesh_forwarder_imported_image:
-        pipeline: prm-mesh-aws-forwarder
-        stage: build_inbox_forwarder
+      app:
+        pipeline: prm-deductions-mesh-forwarder
+        stage: import
       mesh_forwarder_test:
         pipeline: prm-deductions-mesh-forwarder.test
         stage: deploy
@@ -123,20 +120,19 @@ pipelines:
     stages: *common_stages
   'prm-deductions-mesh-forwarder.prod':
     group: continuity-service
-    label_template: '${git[:8]}'
+    label_template: "${COUNT}-${git[:8]}"
     materials:
       git:
         type: configrepo
         blacklist:
           - docs/**/*.*
           - nems-subscriber/**/*.*
-      mesh_forwarder_imported_image:
-        pipeline: prm-mesh-aws-forwarder
-        stage: build_inbox_forwarder
+      app:
+        pipeline: prm-deductions-mesh-forwarder
+        stage: import
       mesh_forwarder_test:
         pipeline: prm-deductions-mesh-forwarder.pre-prod
         stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: prod
     stages: *prod_stages
-

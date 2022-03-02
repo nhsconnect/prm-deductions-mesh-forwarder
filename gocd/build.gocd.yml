@@ -2,7 +2,7 @@ format_version: 4
 pipelines:
   'prm-deductions-mesh-forwarder':
     group: continuity-service
-    label_template: '${git[:8]}'
+    label_template: "${COUNT}-${git[:8]}"
     materials:
       git:
         type: configrepo
@@ -21,4 +21,4 @@ pipelines:
                 command: /bin/bash
                 arguments:
                   - -c
-                  - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_FORWARDER_IMPORTED_IMAGE ./tasks _push_registrations_forwarder_image_to_repo_ecr
+                  - SOURCE_IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_FORWARDER_IMPORTED_IMAGE ./tasks _push_registrations_forwarder_image_to_repo_ecr
