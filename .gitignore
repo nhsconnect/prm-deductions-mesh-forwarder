@@ -68,5 +68,3 @@ coverage
 # Python cache
 __pycache__/
 samples/
-
-utils/
