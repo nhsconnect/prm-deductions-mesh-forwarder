@@ -10,7 +10,7 @@ AWS_DEFAULT_REGION=eu-west-2
 IMAGE_REPO_NAME=deductions/mesh-forwarder
 export NHS_SERVICE=mesh-forwarder
 
-AWS_HELPERS_VERSION=0.2.25
+AWS_HELPERS_VERSION=0.2.26
 echo "AWS helper scripts version: $AWS_HELPERS_VERSION"
 
 
