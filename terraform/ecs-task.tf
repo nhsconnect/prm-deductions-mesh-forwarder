@@ -55,10 +55,10 @@ resource "aws_security_group" "mesh-forwarder-ecs-tasks-sg" {
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
   egress {
-    description = "Allow All Outbound"
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
+    description = "Allow all outbound HTTPS traffic"
+    protocol         = "tcp"
+    from_port        = 443
+    to_port          = 443
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -68,6 +68,7 @@ resource "aws_security_group" "mesh-forwarder-ecs-tasks-sg" {
     Environment = var.environment
   }
 }
+
 
 data "aws_ecr_repository" "mesh_s3_forwarder" {
   name = "deductions/${var.component_name}"
