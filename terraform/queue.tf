@@ -1,6 +1,7 @@
 resource "aws_kms_key" "sns_sqs_encryption" {
   description = "Custom KMS Key to enable server side encryption for SNS and SQS"
   policy      = data.aws_iam_policy_document.sns_sqs_kms_key_policy_doc.json
+  enable_key_rotation = true
 
   tags = {
     Name        = "${var.environment}-sns-sqs-encryption-kms-key"
