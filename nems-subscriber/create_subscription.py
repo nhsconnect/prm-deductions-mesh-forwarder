@@ -8,6 +8,27 @@ from create_headers import create_headers
 def create_subscription(config):
     print(f'Requesting Create Subscription: {config.nems_url}')
 
+    subscribe_payload = create_payload(config)
+
+    r = requests.post(
+        config.nems_url,
+        data=subscribe_payload,
+        headers=create_headers(config, 'Post'),
+        cert=(f"../certs/{config.nhs_env}/nems-client.crt", f"../certs/{config.nhs_env}/nems-client.key"),
+        verify=f"../certs/{config.nhs_env}/nems-ca-certs.crt"
+    )
+
+    print('Create Subscription Response', r.status_code, r.headers, r.content)
+
+    if r.status_code == 201:
+        subscription_id = extract_subscription_id_from_headers(r.headers)
+        print(f"Successfully created new nems subscription: subscription id - {subscription_id}")
+        return subscription_id
+    else:
+        raise Exception(f"Error creating subscription: Status Code {r.status_code}. Error {r.content.decode()}")
+
+
+def create_payload(config):
     subscribe_payload = '<Subscription xmlns="http://hl7.org/fhir">' + \
                         '<meta>' + \
                         '	<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/EMS-Subscription-1"/>' + \
@@ -28,23 +49,7 @@ def create_subscription(config):
                         '</Subscription>'
 
     print('Create subscription payload', subscribe_payload)
-
-    r = requests.post(
-        config.nems_url,
-        data=subscribe_payload,
-        headers=create_headers(config, 'Post'),
-        cert=(f"../certs/{config.nhs_env}/nems-client.crt", f"../certs/{config.nhs_env}/nems-client.key"),
-        verify=f"../certs/{config.nhs_env}/nems-ca-certs.crt"
-    )
-
-    print('Create Subscription Response', r.status_code, r.headers, r.content)
-
-    if r.status_code == 201:
-        subscription_id = extract_subscription_id_from_headers(r.headers)
-        print(f"Successfully created new nems subscription: subscription id - {subscription_id}")
-        return subscription_id
-    else:
-        raise Exception(f"Error creating subscription: Status Code {r.status_code}. Error {r.content.decode()}")
+    return subscribe_payload
 
 
 def extract_subscription_id_from_headers(headers):

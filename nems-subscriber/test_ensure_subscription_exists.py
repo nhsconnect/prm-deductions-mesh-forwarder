@@ -5,7 +5,7 @@ from config import Config
 
 
 def test_that_when_subscription_does_not_exist_it_is_created():
-    config = Config(repo_asid="A1", ods_code="ods", nems_url="http://host:8080", mesh_mailbox_id="mesh", nems_subscription_id="sub", nhs_env="testing", nems_asid="ASID", env_url_suffix="testing.pre-prod")
+    config = Config(repo_asid="A1", ods_code="ods", nems_url="http://host:8080", mesh_mailbox_id="mesh", nems_subscription_id="sub", nhs_env="testing", nems_asid="ASID", issuer="testing.pre-prod")
     reader = Mock(return_value=404)
     creator = Mock(return_value='new_sub_id')
 
@@ -16,7 +16,7 @@ def test_that_when_subscription_does_not_exist_it_is_created():
 
 
 def test_that_when_no_subscription_id_present_it_is_created():
-    config = Config(repo_asid="A1", ods_code="ods", nems_url="http://host:8080", mesh_mailbox_id="mesh", nhs_env="testing", nems_asid="ASID", env_url_suffix="testing.pre-prod")
+    config = Config(repo_asid="A1", ods_code="ods", nems_url="http://host:8080", mesh_mailbox_id="mesh", nhs_env="testing", nems_asid="ASID", issuer="testing.pre-prod")
     reader = Mock()
     creator = Mock(return_value='new_sub_id')
 
@@ -28,7 +28,7 @@ def test_that_when_no_subscription_id_present_it_is_created():
 
 
 def test_that_when_subscription_does_exist_it_is_not_recreated():
-    config = Config(repo_asid="A1", ods_code="ods", nems_url="http://host:8080", mesh_mailbox_id="mesh", nems_subscription_id="sub", nhs_env="testing", nems_asid="ASID", env_url_suffix="testing.pre-prod")
+    config = Config(repo_asid="A1", ods_code="ods", nems_url="http://host:8080", mesh_mailbox_id="mesh", nems_subscription_id="sub", nhs_env="testing", nems_asid="ASID", issuer="testing.pre-prod")
 
     reader = Mock(return_value=200)
     creator = Mock()
