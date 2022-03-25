@@ -12,7 +12,7 @@ class Config:
     nhs_env: str
     mesh_mailbox_id: str
     nems_asid: str
-    env_url_suffix: str
+    issuer: str
     nems_subscription_id: Optional[str] = None
 
 def _read_env_var(name, required=True):
@@ -28,7 +28,7 @@ def read_subscribe_config_from_env():
         ods_code=_read_env_var('ODS_CODE'),
         nems_url=_read_env_var('NEMS_URL'),
         nems_asid=_read_env_var('NEMS_ASID'),
-        env_url_suffix=_read_env_var('ENV_URL_SUFFIX'),
+        issuer=_read_env_var('ISSUER'),
         nhs_env=_read_env_var('NHS_ENVIRONMENT', required=False),
         mesh_mailbox_id=_read_env_var('MESH_MAILBOX_ID', required=False),
         nems_subscription_id=_read_env_var('NEMS_SUBSCRIPTION_ID', required=False))

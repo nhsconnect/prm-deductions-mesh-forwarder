@@ -130,7 +130,7 @@ function get_subscriptions_env() {
   export NEMS_URL=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-url")
   export MESH_MAILBOX_ID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-id")
   export NEMS_SUBSCRIPTION_ID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/nems-subscription-id")
-  set_env_url_suffix
+  set_cert_issuer
 }
 
 function get_nems_certificates() {
@@ -149,14 +149,14 @@ function get_mesh_mailbox_certificates() {
 }
 
 function get_local_tkw_subscriptions_env() {
-  export REPO_ASID='918999198820'
-  export NEMS_ASID='111111111111'
-  export ODS_CODE='A91720'
-  export NEMS_URL='http://192.168.128.14:8080/STU3/Subscription'
-  export MESH_MAILBOX_ID='A91720OT001'
+  export REPO_ASID='200000033391'
+  export NEMS_ASID='200000006422'
+  export ODS_CODE='I6M8I'
+  export NEMS_URL='http://clinicals.spineservices.nhs.uk/STU3/Subscription'
+  export MESH_MAILBOX_ID='I6M8IHC001'
   export NEMS_SUBSCRIPTION_ID='00000000000000000000000000000000'
-  export NHS_ENVIRONMENT=tkw
-  set_env_url_suffix
+  export NHS_ENVIRONMENT=prod
+  set_cert_issuer
 }
 
 function set_nems_env() {
@@ -169,11 +169,11 @@ function set_nems_env() {
   pushd nems-subscriber && pip3 install -r requirements.txt
 }
 
-function set_env_url_suffix() {
+function set_cert_issuer() {
   if [[ "${NHS_ENVIRONMENT}" == prod ]]; then
-    export ENV_URL_SUFFIX=${NHS_ENVIRONMENT}
+    export ISSUER=nems-${ODS_CODE}.nhsdigital.nhs.uk
   else
-    export ENV_URL_SUFFIX=${NHS_ENVIRONMENT}.non-prod
+    export ISSUER=${ODS_CODE}.nems.${NHS_ENVIRONMENT}.non-prod.patient-deductions.nhs.uk
   fi
 }
 
@@ -471,6 +471,27 @@ case "${command}" in
     ;;
   delete_nems_subscription)
     dojo -c Dojofile-python "./tasks _delete_nems_subscription"
+    ;;
+  _print_create_subscription)
+    set_nems_env
+    python3 print_create_subscription.py
+    ;;
+  print_create_subscription)
+    dojo -c Dojofile-python "./tasks _print_create_subscription"
+    ;;
+  _print_read_subscription)
+    set_nems_env
+    python3 print_read_subscription.py
+    ;;
+  print_read_subscription)
+    dojo -c Dojofile-python "./tasks _print_read_subscription"
+    ;;
+  _print_delete_subscription)
+    set_nems_env
+    python3 print_delete_subscription.py
+    ;;
+  print_delete_subscription)
+    dojo -c Dojofile-python "./tasks _print_delete_subscription"
     ;;
   promote_docker_image)
     check_env
