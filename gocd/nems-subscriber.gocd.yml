@@ -65,3 +65,21 @@ pipelines:
                       - -c
                       - ./tasks create_nems_subscription_and_update_ssm
 
+      - prod:
+          approval:
+            type: manual
+            allow_only_on_success: true
+          clean_workspace: true
+          jobs:
+            subscribe:
+              resources:
+                - docker
+              environment_variables:
+                NHS_ENVIRONMENT: prod
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks create_nems_subscription_and_update_ssm
+
