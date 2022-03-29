@@ -9,7 +9,9 @@ def create_headers(config, method):
         'fromASID': config.repo_asid,
         'toASID': config.nems_asid,
         'Authorization': f'Bearer {token}',
-        'InteractionID': f'urn:nhs:names:services:clinicals-sync:SubscriptionsApi{method}'
+        'InteractionID': f'urn:nhs:names:services:clinicals-sync:SubscriptionsApi{method}',
+        'X-Spine-SSLProtocol': 'TLSv1.2',
+        'X-Spine-SSLCipher': 'ECDHE-RSA-AES256-GCM-SHA384'
     }
     print(f"Headers created for request: fromASID - {config.repo_asid}, toASID - {config.nems_asid}, "
           f"InteractionID - {headers.get('InteractionID')}", )
