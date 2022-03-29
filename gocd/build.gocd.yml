@@ -8,6 +8,8 @@ pipelines:
         type: configrepo
         blacklist:
           - docs/**/*.*
+          - nems-subscriber/**/*.*
+          - gocd/nems-subscriber.gocd.yml
       mesh_forwarder_imported_image:
         pipeline: prm-mesh-aws-forwarder
         stage: build_inbox_forwarder
