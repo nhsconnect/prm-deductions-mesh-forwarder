@@ -1,14 +1,14 @@
 environment    = "prod"
 
-//desired count should be 1 or 2 again once we obtain mesh-mailbox secrets.
-service_desired_count = "0"
+# must not be more than 1 causes issues reading from mailbox
+service_desired_count = "1"
 
 cloudwatch_alarm_evaluation_periods = 30
 log_level = "info"
 
 poll_frequency = "60"
 
-mesh_url = "https://msg.intspineservices.nhs.uk"
+mesh_url = "https://mesh-sync.spineservices.nhs.uk"
 mesh_mailbox_ssm_param_name = "/repo/prod/user-input/external/mesh-mailbox-id"
 mesh_password_ssm_param_name = "/repo/prod/user-input/external/mesh-mailbox-password"
 mesh_shared_key_ssm_param_name = "/repo/prod/user-input/external/mesh-mailbox-shared-secret"
