@@ -260,14 +260,12 @@ function docker_login() {
   eval $(dojo -c Dojofile-infra "aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION")
 }
 
-function configure_docker_repository_uri() {
+function docker_login_and_export_repository_uri() {
   docker_login
-  get_aws_account_id
   export REPOSITORY_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME"
 }
 
 function pull_registrations_forwarder_image() {
-  get_aws_account_id
   SRC_IMAGE_NAME_AND_TAG="${AWS_ACCOUNT_ID}.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/registrations/mesh-inbox-s3-forwarder:${SOURCE_IMAGE_TAG}"
   docker pull "$SRC_IMAGE_NAME_AND_TAG"
   docker tag "$SRC_IMAGE_NAME_AND_TAG" "registrations/mesh-inbox-s3-forwarder:${SOURCE_IMAGE_TAG}"
@@ -281,8 +279,6 @@ function build_forwarder_image() {
 }
 
 function push_forwarder_image_to_repo_ecr() {
-  get_aws_account_id
-  configure_docker_repository_uri
   IMAGE_FULL_URL="${REPOSITORY_URI}:${IMAGE_TAG}"
   docker tag "$IMAGE_REPO_NAME:${IMAGE_TAG}" "$IMAGE_FULL_URL"
   docker push "$IMAGE_FULL_URL"
@@ -525,6 +521,8 @@ case "${command}" in
       exit 1
     fi
     set_image_tag
+    get_aws_account_id
+    docker_login_and_export_repository_uri
     pull_registrations_forwarder_image
     build_forwarder_image
     push_forwarder_image_to_repo_ecr
