@@ -71,6 +71,7 @@ resource "aws_cloudwatch_metric_alarm" "error_log_alarm" {
   treat_missing_data        = "notBreaching"
   actions_enabled           = "true"
   alarm_actions             = local.alarm_actions
+  ok_actions                = local.alarm_actions
 }
 
 resource "aws_cloudwatch_metric_alarm" "sns_topic_error_log_alarm" {
@@ -89,4 +90,5 @@ resource "aws_cloudwatch_metric_alarm" "sns_topic_error_log_alarm" {
   treat_missing_data        = "notBreaching"
   actions_enabled           = "true"
   alarm_actions             = local.alarm_actions
+  ok_actions                = local.alarm_actions
 }
