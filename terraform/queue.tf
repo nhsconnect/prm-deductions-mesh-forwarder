@@ -73,19 +73,19 @@ resource "aws_sns_topic" "nems_events" {
 }
 
 resource "aws_sqs_queue" "observability" {
-  name                      = "${var.environment}-${var.component_name}-nems-events-observability-queue"
+  name                      = "${var.environment}-${var.component_name}-nems-events-observability"
   message_retention_seconds = 1800
   kms_master_key_id         = aws_kms_key.sns_sqs_encryption.id
 
   tags = {
-    Name        = "${var.environment}-${var.component_name}-nems-events-observability-queue"
+    Name        = "${var.environment}-${var.component_name}-nems-events-observability"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
 }
 
-resource "aws_ssm_parameter" "nems_events_observability_queue" {
-  name = "/repo/${var.environment}/output/${var.component_name}/nems-events-observability-queue"
+resource "aws_ssm_parameter" "nems_events_observability" {
+  name = "/repo/${var.environment}/output/${var.component_name}/nems-events-observability"
   type = "String"
   value = aws_sqs_queue.observability.name
   tags = {
@@ -94,7 +94,7 @@ resource "aws_ssm_parameter" "nems_events_observability_queue" {
   }
 }
 
-resource "aws_sns_topic_subscription" "nems_events_to_observability_queue" {
+resource "aws_sns_topic_subscription" "nems_events_to_observability" {
   protocol             = "sqs"
   raw_message_delivery = true
   topic_arn            = aws_sns_topic.nems_events.arn
