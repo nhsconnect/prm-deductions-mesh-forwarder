@@ -59,14 +59,8 @@ pipelines:
           - docs/**/*.*
           - nems-subscriber/**/*.*
       app:
-        pipeline: prm-deductions-mesh-forwarder
-        stage: import
-      mesh_forwarder_test:
-        pipeline: prm-deductions-mesh-forwarder.test
-        stage: deploy
-      e2e:
-        pipeline: continuity-e2e-tests.test
-        stage: test
+        pipeline: mesh-forwarder
+        stage: promote.test
     environment_variables:
       NHS_ENVIRONMENT: perf
     stages: *common_stages
