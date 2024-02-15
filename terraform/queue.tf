@@ -1,6 +1,6 @@
 resource "aws_kms_key" "sns_sqs_encryption" {
-  description = "Custom KMS Key to enable server side encryption for SNS and SQS"
-  policy      = data.aws_iam_policy_document.sns_sqs_kms_key_policy_doc.json
+  description         = "Custom KMS Key to enable server side encryption for SNS and SQS"
+  policy              = data.aws_iam_policy_document.sns_sqs_kms_key_policy_doc.json
   enable_key_rotation = true
 
   tags = {
@@ -72,6 +72,69 @@ resource "aws_sns_topic" "nems_events" {
   }
 }
 
+resource "aws_sns_topic_policy" "deny_http" {
+  for_each = toset(local.sns_topic_arns)
+
+  arn = each.value
+
+  policy = <<EOF
+{
+  "Version": "2008-10-17",
+  "Id": "__default_policy_ID",
+  "Statement": [
+    {
+      "Sid": "__default_statement_ID",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "*"
+      },
+      "Action": [
+        "SNS:GetTopicAttributes",
+        "SNS:SetTopicAttributes",
+        "SNS:AddPermission",
+        "SNS:RemovePermission",
+        "SNS:DeleteTopic",
+        "SNS:Subscribe",
+        "SNS:ListSubscriptionsByTopic",
+        "SNS:Publish",
+        "SNS:Receive"
+      ],
+      "Resource": "${each.value}",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceOwner": "${data.aws_caller_identity.current.account_id}"
+        }
+      }
+    },
+    {
+      "Sid": "DenyHTTPSubscription",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "sns:Subscribe",
+      "Resource": "${each.value}",
+      "Condition": {
+        "StringEquals": {
+          "sns:Protocol": "http"
+        }
+      }
+    },
+    {
+      "Sid": "DenyHTTPPublish",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "SNS:Publish",
+      "Resource": "${each.value}",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    }
+  ]
+}
+EOF
+}
+
 resource "aws_sqs_queue" "observability" {
   name                      = "${var.environment}-${var.component_name}-nems-events-observability"
   message_retention_seconds = 1800
@@ -85,8 +148,8 @@ resource "aws_sqs_queue" "observability" {
 }
 
 resource "aws_ssm_parameter" "nems_events_observability" {
-  name = "/repo/${var.environment}/output/${var.component_name}/nems-events-observability"
-  type = "String"
+  name  = "/repo/${var.environment}/output/${var.component_name}/nems-events-observability"
+  type  = "String"
   value = aws_sqs_queue.observability.name
   tags = {
     CreatedBy   = var.repo_name

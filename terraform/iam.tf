@@ -1,5 +1,8 @@
 locals {
   account_id = data.aws_caller_identity.current.account_id
+  sns_topic_arns = [
+    aws_sns_topic.nems_events.arn
+  ]
 }
 
 data "aws_iam_policy_document" "ecs-assume-role-policy" {
@@ -68,9 +71,7 @@ data "aws_iam_policy_document" "sns_policy_doc" {
     actions = [
       "sns:Publish"
     ]
-    resources = [
-      aws_sns_topic.nems_events.arn,
-    ]
+    resources = local.sns_topic_arns
   }
 }
 
