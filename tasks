@@ -68,47 +68,6 @@ function set_image_tag() {
   fi
 }
 
-function _acknowledge_mesh_mailbox_message() {
-  get_mesh_mailbox_certificates
-  get_authorisation
-  authorization_token=$1
-  message_id=$2
-
-  if [[ -z "${authorization_token}" ]]; then
-     echo "You need to provide an authorization token"
-     exit 1
-  fi
-  if [[ -z "${message_id}" ]]; then
-     echo "You need to provide a message ID"
-     exit 1
-  fi
-
-  curl -k --request "PUT" \
-    --cacert "certs/${NHS_ENVIRONMENT}/mesh-mailbox-ca-cert.pem" \
-    --key "certs/${NHS_ENVIRONMENT}/mesh-mailbox-key.pem" \
-    --cert "certs/${NHS_ENVIRONMENT}/mesh-mailbox-cert.pem" \
-    --header "Authorization: $authorization_token" \
-    "https://msg.intspineservices.nhs.uk/messageexchange/${MAIL_BOX_ID}/inbox/${message_id}/status/acknowledged"
-}
-
-function _get_mesh_mailbox_messages() {
-  get_mesh_mailbox_certificates
-  get_authorisation
-  authorization_token=$1
-
-  if [[ -z "${authorization_token}" ]]; then
-     echo "You need to provide an authorization token"
-     exit 1
-  fi
-
-  curl -k --request "GET" \
-    --cacert "certs/${NHS_ENVIRONMENT}/mesh-mailbox-ca-cert.pem" \
-    --key "certs/${NHS_ENVIRONMENT}/mesh-mailbox-key.pem" \
-    --cert "certs/${NHS_ENVIRONMENT}/mesh-mailbox-cert.pem" \
-    --header "Authorization: $authorization_token" \
-    "https://msg.intspineservices.nhs.uk/messageexchange/${MAIL_BOX_ID}/inbox"
-}
-
 function get_authorisation() {
   check_env
   export SHARED_SECRET=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/mesh-mailbox-shared-secret")
@@ -420,16 +379,6 @@ case "${command}" in
   get_authorisation_token)
     check_env
     dojo -c Dojofile-python "./tasks _get_authorisation_token"
-    ;;
-  _get_mesh_mailbox_messages)
-    check_env
-    authorization_token=$(_get_authorisation_token)
-    _get_mesh_mailbox_messages "$authorization_token"
-    ;;
-  _acknowledge_mesh_mailbox_message)
-    check_env
-    authorization_token=$(_get_authorisation_token)
-    _acknowledge_mesh_mailbox_message "$authorization_token" $2
     ;;
   _create_nems_subscription_and_update_ssm)
     _assume_environment_role $NHS_ENVIRONMENT
